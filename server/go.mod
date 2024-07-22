@@ -6,5 +6,3 @@ require (
 	github.com/ByteArena/box2d v1.0.2
 	github.com/simpletonDL/GoGames/common v0.0.0
 )
-
-replace github.com/simpletonDL/GoGames/common v0.0.0 => ../common

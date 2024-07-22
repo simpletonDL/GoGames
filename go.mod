@@ -19,8 +19,3 @@ require (
 	golang.org/x/sync v0.7.0 // indirect
 	golang.org/x/sys v0.20.0 // indirect
 )
-
-replace (
-	github.com/simpletonDL/GoGames/common v0.0.0 => ./common
-	github.com/simpletonDL/GoGames/client v0.0.0 => ./client
-)
