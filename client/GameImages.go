@@ -1,11 +1,21 @@
 package client
 
 import (
+	"bytes"
+	_ "embed"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	_ "image/jpeg"
 	_ "image/png"
 	"log"
+)
+
+var (
+	//go:embed assets/stars-background.jpg
+	backgroundImageRaw []byte
+
+	//go:embed assets/wooden-box.png
+	boxImageRaw []byte
 )
 
 var (
@@ -15,8 +25,8 @@ var (
 	BoxImage        *ebiten.Image
 )
 
-func LoadImage(path string) *ebiten.Image {
-	image, _, err := ebitenutil.NewImageFromFile(path)
+func LoadImage(bs []byte) *ebiten.Image {
+	image, _, err := ebitenutil.NewImageFromReader(bytes.NewReader(bs))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -24,8 +34,6 @@ func LoadImage(path string) *ebiten.Image {
 }
 
 func LoadImages(pathToAssets string) {
-	//PlayerImage = LoadImage("assets/submarine.png")
-	//BulletImage = LoadImage("assets/bullet.png")
-	BackgroundImage = LoadImage("assets/stars-background.jpg")
-	BoxImage = LoadImage(pathToAssets + "/wooden-box.png")
+	BackgroundImage = LoadImage(backgroundImageRaw)
+	BoxImage = LoadImage(boxImageRaw)
 }
