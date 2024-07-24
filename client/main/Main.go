@@ -15,12 +15,16 @@ func init() {
 }
 
 func main() {
-	if len(os.Args) < 2 {
-		log.Fatal("Port number is required as a program argument")
+	if len(os.Args) < 3 {
+		log.Fatal("Host and port is required (like localhost 5005)")
+	}
+	if argsCount := len(os.Args); argsCount > 2 {
+
 	}
 
-	port := os.Args[1]
-	address := "localhost:" + port
+	host := os.Args[1]
+	port := os.Args[2]
+	address := host + ":" + port
 
 	conn, err := net.Dial("tcp", address)
 	if err != nil {
