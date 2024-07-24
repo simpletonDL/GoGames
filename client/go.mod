@@ -4,7 +4,7 @@ go 1.22
 
 require (
 	github.com/hajimehoshi/ebiten/v2 v2.7.7
-	github.com/simpletonDL/GoGames/common v0.0.0
+	github.com/simpletonDL/GoGames/common v0.0.2
 )
 
 require (
