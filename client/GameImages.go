@@ -16,6 +16,9 @@ var (
 
 	//go:embed assets/wooden-box.png
 	boxImageRaw []byte
+
+	//go:embed assets/artem_aleksyuk.png
+	hero []byte
 )
 
 var (
@@ -23,6 +26,7 @@ var (
 	PlayerImage     *ebiten.Image
 	BulletImage     *ebiten.Image
 	BoxImage        *ebiten.Image
+	HeroImage       *ebiten.Image
 )
 
 func LoadImage(bs []byte) *ebiten.Image {
@@ -36,4 +40,5 @@ func LoadImage(bs []byte) *ebiten.Image {
 func LoadImages(pathToAssets string) {
 	BackgroundImage = LoadImage(backgroundImageRaw)
 	BoxImage = LoadImage(boxImageRaw)
+	HeroImage = LoadImage(hero)
 }

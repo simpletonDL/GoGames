@@ -17,8 +17,13 @@ func createInitialWorld() *box2d.B2World {
 	world := engine.NewWorld(0, -10)
 	// Ground body
 	engine.AddBox(world, box2d.B2BodyType.B2_staticBody, 8, 1, 0, 16, 2, 0, 1)
+
 	// Dynamic body
 	engine.AddBox(world, box2d.B2BodyType.B2_dynamicBody, 8, 15, 1, 1, 1, 1, 0.3)
+
+	// Hero body
+	engine.AddHero(world, 2, 15, 0.6, 1, 1, 0.3)
+
 	return world
 }
 

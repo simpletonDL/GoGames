@@ -24,8 +24,10 @@ func Render(image *ebiten.Image, state *protocol.GameState) {
 	for _, obj := range state.Objects {
 		var objImage *ebiten.Image
 		switch obj.ImageKind {
-		case protocol.BoxKind:
+		case protocol.BodyKind.Box:
 			objImage = BoxImage
+		case protocol.BodyKind.Hero:
+			objImage = HeroImage
 		default:
 			panic(fmt.Sprintf("Unknown object kind %d", obj.ImageKind))
 		}
