@@ -3,12 +3,67 @@ package engine
 import (
 	"github.com/ByteArena/box2d"
 	"github.com/simpletonDL/GoGames/common/protocol"
+	"time"
 )
 
-type BodyUserData struct {
-	Width  float64
-	Height float64
-	Kind   uint8
+type GameEngine struct {
+	Input     chan GameCommand
+	World     *box2d.B2World
+	Players   map[PlayerId]PlayerInfo
+	Listeners []GameEngineListener
+}
+
+func NewGameEngine(inputCapacity int) *GameEngine {
+	return &GameEngine{
+		World:     createInitialWorld(),
+		Input:     make(chan GameCommand, inputCapacity),
+		Players:   map[PlayerId]PlayerInfo{},
+		Listeners: []GameEngineListener{},
+	}
+}
+
+func (e *GameEngine) Run(fps int, velocityIterations int, positionIterations int) {
+	ticker := time.NewTicker(time.Second / time.Duration(fps))
+	timestamp := 1.0 / float64(fps)
+	for {
+		<-ticker.C
+		commands := e.collectAllGameCommandsNonBlocking()
+		for _, command := range commands {
+			command.Execute(e)
+		}
+		e.World.Step(timestamp, velocityIterations, positionIterations)
+		for _, listener := range e.Listeners {
+			listener(e.World)
+		}
+	}
+}
+
+func (e *GameEngine) ScheduleCommand(cmd GameCommand) {
+	e.Input <- cmd
+}
+
+type PlayerId uint8
+
+type PlayerInfo struct {
+	Body *box2d.B2Body
+}
+
+type GameEngineListener func(world *box2d.B2World)
+
+func (e *GameEngine) AddListener(listener GameEngineListener) {
+	e.Listeners = append(e.Listeners, listener)
+}
+
+func (e *GameEngine) collectAllGameCommandsNonBlocking() []GameCommand {
+	var result []GameCommand
+	for {
+		select {
+		case input := <-e.Input:
+			result = append(result, input)
+		default:
+			return result
+		}
+	}
 }
 
 func B2WorldToGameState(world *box2d.B2World) protocol.GameState {
@@ -28,47 +83,4 @@ func B2WorldToGameState(world *box2d.B2World) protocol.GameState {
 	return protocol.GameState{
 		Objects: gameObjects,
 	}
-}
-
-func NewWorld(gravityX float64, gravityY float64) *box2d.B2World {
-	gravity := box2d.MakeB2Vec2(gravityX, gravityY)
-	world := box2d.MakeB2World(gravity)
-	return &world
-}
-
-func AddBox(world *box2d.B2World, bodyType uint8, x float64, y float64, angel float64, width float64, height float64, density float64, friction float64) *box2d.B2Body {
-	bodyDef := box2d.MakeB2BodyDef()
-	bodyDef.Type = bodyType
-	bodyDef.Position.Set(x, y)
-	bodyDef.Angle = angel
-	body := world.CreateBody(&bodyDef)
-
-	boxShape := box2d.MakeB2PolygonShape()
-	boxShape.SetAsBox(width/2, height/2)
-	fixtureDef := box2d.MakeB2FixtureDef()
-	fixtureDef.Shape = &boxShape
-	fixtureDef.Density = density
-	fixtureDef.Friction = friction
-	body.CreateFixtureFromDef(&fixtureDef)
-
-	body.SetUserData(BodyUserData{Width: width, Height: height, Kind: protocol.BodyKind.Box})
-	return body
-}
-
-func AddHero(world *box2d.B2World, x float64, y float64, width float64, height float64, density float64, friction float64) *box2d.B2Body {
-	bodyDef := box2d.MakeB2BodyDef()
-	bodyDef.Type = box2d.B2BodyType.B2_dynamicBody
-	bodyDef.Position.Set(x, y)
-	body := world.CreateBody(&bodyDef)
-
-	boxShape := box2d.MakeB2PolygonShape()
-	boxShape.SetAsBox(width/2, height/2)
-	fixtureDef := box2d.MakeB2FixtureDef()
-	fixtureDef.Shape = &boxShape
-	fixtureDef.Density = density
-	fixtureDef.Friction = friction
-	body.CreateFixtureFromDef(&fixtureDef)
-
-	body.SetUserData(BodyUserData{Width: width, Height: height, Kind: protocol.BodyKind.Hero})
-	return body
 }
