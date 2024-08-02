@@ -27,10 +27,10 @@ func NewMouseClickCommand(worldX float64, worldY float64) ClientInputCommand {
 }
 
 var MoveHeroKind = struct {
-	Left  uint8
-	Right uint8
-	Up    uint8
-	Down  uint8
+	Left  int
+	Right int
+	Up    int
+	Down  int
 }{
 	Left:  0,
 	Right: 1,
@@ -38,11 +38,11 @@ var MoveHeroKind = struct {
 	Down:  3,
 }
 
-func NewMoveHeroCommand(moveKind uint8) ClientInputCommand {
+func NewMoveHeroCommand(moveKind int) ClientInputCommand {
 	return ClientInputCommand{
 		Id: InputCommandKind.MoveHero,
 		IntArgs: map[string]int{
-			"kind": int(moveKind),
+			"kind": moveKind,
 		},
 	}
 }

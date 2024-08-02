@@ -55,7 +55,7 @@ func NewWorld(gravityX float64, gravityY float64) *box2d.B2World {
 }
 
 func createInitialWorld() *box2d.B2World {
-	world := NewWorld(0, -10)
+	world := NewWorld(0, -20)
 	// Ground body
 	AddBox(world, box2d.B2BodyType.B2_staticBody, 8, 1, 0, 16, 2, 0, 1)
 

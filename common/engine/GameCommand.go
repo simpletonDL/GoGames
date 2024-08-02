@@ -22,6 +22,32 @@ func (c PlayerInputCommand) Execute(engine *GameEngine) {
 		y := c.Cmd.FloatArgs["y"]
 		fmt.Printf("processInputCommands: Click %f %f\n", x, y)
 		AddBox(engine.World, box2d.B2BodyType.B2_dynamicBody, x, y, 1, 1, 1, 1, 0.3)
+	case protocol.InputCommandKind.MoveHero:
+		playerBody := engine.Players[c.PlayerId].Body
+		playerVel := playerBody.GetLinearVelocity()
+
+		desiredVelX := playerVel.X
+		desiredVelY := playerVel.Y
+
+		moveKind := c.Cmd.IntArgs["kind"]
+		switch moveKind {
+		case protocol.MoveHeroKind.Right:
+			desiredVelX = 5
+		case protocol.MoveHeroKind.Left:
+			desiredVelX = -5
+		case protocol.MoveHeroKind.Up:
+			desiredVelY = 10
+			//case protocol.MoveHeroKind.Down:
+			//	desiredVelY = -2
+		}
+
+		velChangeX := desiredVelX - playerVel.X
+		velChangeY := desiredVelY - playerVel.Y
+		impulse := box2d.B2Vec2{
+			X: playerBody.GetMass() * velChangeX,
+			Y: playerBody.GetMass() * velChangeY,
+		}
+		playerBody.ApplyLinearImpulse(impulse, playerBody.GetWorldCenter(), true)
 	}
 }
 

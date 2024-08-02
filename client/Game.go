@@ -18,6 +18,7 @@ type Game struct {
 }
 
 func (g *Game) Update() error {
+	encoder := json.NewEncoder(g.Conn)
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
 		x, y := ebiten.CursorPosition()
 
@@ -26,13 +27,33 @@ func (g *Game) Update() error {
 
 		worldX, worldY := coordinatesMapper.ScreenToWorld(float64(x), float64(y))
 		fmt.Printf("%f %f\n", worldX, worldY)
-		message := protocol.NewMouseClick(worldX, worldY)
+		message := protocol.NewMouseClickCommand(worldX, worldY)
 
 		// Serialize the message to JSON
-		encoder := json.NewEncoder(g.Conn)
 		err := encoder.Encode(message)
 		if err != nil {
-			log.Printf("Failed to serialize message to JSON: %v", err)
+			log.Printf("Failed to serialize message to JSON: %v\n", err)
+		}
+	}
+	if ebiten.IsKeyPressed(ebiten.KeyD) || ebiten.IsKeyPressed(ebiten.KeyRight) {
+		message := protocol.NewMoveHeroCommand(protocol.MoveHeroKind.Right)
+		err := encoder.Encode(message)
+		if err != nil {
+			log.Printf("Failed to serialize message to JSON: %v\n", err)
+		}
+	}
+	if ebiten.IsKeyPressed(ebiten.KeyA) || ebiten.IsKeyPressed(ebiten.KeyLeft) {
+		message := protocol.NewMoveHeroCommand(protocol.MoveHeroKind.Left)
+		err := encoder.Encode(message)
+		if err != nil {
+			log.Printf("Failed to serialize message to JSON: %v\n", err)
+		}
+	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyW) || inpututil.IsKeyJustPressed(ebiten.KeyUp) {
+		message := protocol.NewMoveHeroCommand(protocol.MoveHeroKind.Up)
+		err := encoder.Encode(message)
+		if err != nil {
+			log.Printf("Failed to serialize message to JSON: %v\n", err)
 		}
 	}
 	return nil
