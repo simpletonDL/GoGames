@@ -9,6 +9,8 @@ type BodyUserData struct {
 	Width  float64
 	Height float64
 	Kind   uint8
+	// Bodies don't collide with their owner (for skip collisions between player and created by him bullets)
+	Owner *box2d.B2Body
 }
 
 func AddBox(world *box2d.B2World, bodyType uint8, x float64, y float64, angel float64, width float64, height float64, density float64, friction float64) *box2d.B2Body {
@@ -23,9 +25,9 @@ func AddHero(world *box2d.B2World, x float64, y float64, width float64, height f
 	return hero
 }
 
-func AddBullet(world *box2d.B2World, x float64, y float64, angel float64, width float64, height float64) *box2d.B2Body {
+func AddBullet(world *box2d.B2World, x float64, y float64, angel float64, width float64, height float64, owner *box2d.B2Body) *box2d.B2Body {
 	bullet := AddBox(world, box2d.B2BodyType.B2_kinematicBody, x, y, 0, width, height, 1, 1)
-	bullet.SetUserData(BodyUserData{Width: width, Height: height, Kind: protocol.BodyKind.Bullet})
+	bullet.SetUserData(BodyUserData{Width: width, Height: height, Kind: protocol.BodyKind.Bullet, Owner: owner})
 	bullet.SetBullet(true)
 	return bullet
 }

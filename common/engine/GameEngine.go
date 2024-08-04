@@ -14,12 +14,15 @@ type GameEngine struct {
 }
 
 func NewGameEngine(inputCapacity int) *GameEngine {
-	return &GameEngine{
+	engine := &GameEngine{
 		World:     createInitialWorld(),
 		Input:     make(chan GameCommand, inputCapacity),
 		Players:   map[PlayerId]PlayerInfo{},
 		Listeners: []GameEngineListener{},
 	}
+	// Add collision logic
+	engine.World.SetContactListener(NewCollisionTracker(engine))
+	return engine
 }
 
 func (e *GameEngine) Run(fps int, velocityIterations int, positionIterations int) {

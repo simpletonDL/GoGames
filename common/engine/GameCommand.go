@@ -7,7 +7,7 @@ import (
 )
 
 type GameCommand interface {
-	Execute(world *GameEngine)
+	Execute(engine *GameEngine)
 }
 
 type PlayerInputCommand struct {
@@ -53,7 +53,7 @@ func (c PlayerInputCommand) Execute(engine *GameEngine) {
 		playerBody := engine.Players[c.PlayerId].Body
 		playerPosition := playerBody.GetPosition()
 		userData := playerBody.GetUserData().(BodyUserData)
-		bullet := AddBullet(engine.World, playerPosition.X+userData.Width/1.5, playerPosition.Y, 0, 0.2, 0.2)
+		bullet := AddBullet(engine.World, playerPosition.X+userData.Width, playerPosition.Y, 0, 0.2, 0.2, playerBody)
 		bullet.SetLinearVelocity(box2d.B2Vec2{X: 15, Y: 0})
 	}
 }
@@ -77,4 +77,22 @@ type CreateBulletCommand struct {
 func (c CreateBulletCommand) Execute(engine *GameEngine) {
 	playerBody := engine.Players[c.PlayerId].Body
 	playerBody.GetPosition()
+}
+
+type RemoveBodyCommand struct {
+	body *box2d.B2Body
+}
+
+func (c RemoveBodyCommand) Execute(engine *GameEngine) {
+	engine.World.DestroyBody(c.body)
+}
+
+type ApplyImpulseCommand struct {
+	body    *box2d.B2Body
+	point   box2d.B2Vec2
+	impulse box2d.B2Vec2
+}
+
+func (c ApplyImpulseCommand) Execute(engine *GameEngine) {
+	c.body.ApplyLinearImpulse(c.impulse, c.point, true)
 }
