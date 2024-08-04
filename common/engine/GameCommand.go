@@ -48,6 +48,13 @@ func (c PlayerInputCommand) Execute(engine *GameEngine) {
 			Y: playerBody.GetMass() * velChangeY,
 		}
 		playerBody.ApplyLinearImpulse(impulse, playerBody.GetWorldCenter(), true)
+	case protocol.InputCommandKind.MakeShoot:
+		fmt.Printf("processInputCommands: Shoot\n")
+		playerBody := engine.Players[c.PlayerId].Body
+		playerPosition := playerBody.GetPosition()
+		userData := playerBody.GetUserData().(BodyUserData)
+		bullet := AddBullet(engine.World, playerPosition.X+userData.Width/1.5, playerPosition.Y, 0, 0.2, 0.2)
+		bullet.SetLinearVelocity(box2d.B2Vec2{X: 15, Y: 0})
 	}
 }
 
@@ -61,4 +68,13 @@ func (c CreatePlayerCommand) Execute(engine *GameEngine) {
 	body := AddHero(engine.World, 2, 15, 0.6, 1, 1, 0.3)
 	engine.Players[c.PlayerId] = PlayerInfo{Body: body}
 	fmt.Printf("createPlayerCommand: id=%d\n", c.PlayerId)
+}
+
+type CreateBulletCommand struct {
+	PlayerId PlayerId
+}
+
+func (c CreateBulletCommand) Execute(engine *GameEngine) {
+	playerBody := engine.Players[c.PlayerId].Body
+	playerBody.GetPosition()
 }

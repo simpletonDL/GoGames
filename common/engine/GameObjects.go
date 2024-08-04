@@ -12,6 +12,25 @@ type BodyUserData struct {
 }
 
 func AddBox(world *box2d.B2World, bodyType uint8, x float64, y float64, angel float64, width float64, height float64, density float64, friction float64) *box2d.B2Body {
+	body := addRectangle(world, bodyType, x, y, angel, width, height, density, friction)
+	body.SetUserData(BodyUserData{Width: width, Height: height, Kind: protocol.BodyKind.Box})
+	return body
+}
+
+func AddHero(world *box2d.B2World, x float64, y float64, width float64, height float64, density float64, friction float64) *box2d.B2Body {
+	hero := addRectangle(world, box2d.B2BodyType.B2_dynamicBody, x, y, 0, width, height, density, friction)
+	hero.SetUserData(BodyUserData{Width: width, Height: height, Kind: protocol.BodyKind.Hero})
+	return hero
+}
+
+func AddBullet(world *box2d.B2World, x float64, y float64, angel float64, width float64, height float64) *box2d.B2Body {
+	bullet := AddBox(world, box2d.B2BodyType.B2_kinematicBody, x, y, 0, width, height, 1, 1)
+	bullet.SetUserData(BodyUserData{Width: width, Height: height, Kind: protocol.BodyKind.Bullet})
+	bullet.SetBullet(true)
+	return bullet
+}
+
+func addRectangle(world *box2d.B2World, bodyType uint8, x float64, y float64, angel float64, width float64, height float64, density float64, friction float64) *box2d.B2Body {
 	bodyDef := box2d.MakeB2BodyDef()
 	bodyDef.Type = bodyType
 	bodyDef.Position.Set(x, y)
@@ -25,26 +44,6 @@ func AddBox(world *box2d.B2World, bodyType uint8, x float64, y float64, angel fl
 	fixtureDef.Density = density
 	fixtureDef.Friction = friction
 	body.CreateFixtureFromDef(&fixtureDef)
-
-	body.SetUserData(BodyUserData{Width: width, Height: height, Kind: protocol.BodyKind.Box})
-	return body
-}
-
-func AddHero(world *box2d.B2World, x float64, y float64, width float64, height float64, density float64, friction float64) *box2d.B2Body {
-	bodyDef := box2d.MakeB2BodyDef()
-	bodyDef.Type = box2d.B2BodyType.B2_dynamicBody
-	bodyDef.Position.Set(x, y)
-	body := world.CreateBody(&bodyDef)
-
-	boxShape := box2d.MakeB2PolygonShape()
-	boxShape.SetAsBox(width/2, height/2)
-	fixtureDef := box2d.MakeB2FixtureDef()
-	fixtureDef.Shape = &boxShape
-	fixtureDef.Density = density
-	fixtureDef.Friction = friction
-	body.CreateFixtureFromDef(&fixtureDef)
-
-	body.SetUserData(BodyUserData{Width: width, Height: height, Kind: protocol.BodyKind.Hero})
 	return body
 }
 

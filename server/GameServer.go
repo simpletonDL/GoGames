@@ -31,5 +31,6 @@ func Run(port string) {
 			PosY:     15,
 		})
 		go HandleClientInput(client, processor)
+		currentClientId++
 	}
 }

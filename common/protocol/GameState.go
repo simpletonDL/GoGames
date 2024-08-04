@@ -1,11 +1,13 @@
 package protocol
 
 var BodyKind = struct {
-	Box  uint8
-	Hero uint8
+	Box    uint8
+	Hero   uint8
+	Bullet uint8
 }{
-	Box:  0,
-	Hero: 1,
+	Box:    0,
+	Hero:   1,
+	Bullet: 2,
 }
 
 type GameState struct {

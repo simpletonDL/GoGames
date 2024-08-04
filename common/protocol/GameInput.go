@@ -3,9 +3,11 @@ package protocol
 var InputCommandKind = struct {
 	MouseClick uint8
 	MoveHero   uint8
+	MakeShoot  uint8
 }{
 	MouseClick: 0,
 	MoveHero:   1,
+	MakeShoot:  2,
 }
 
 type GameInput []ClientInputCommand
@@ -44,5 +46,13 @@ func NewMoveHeroCommand(moveKind int) ClientInputCommand {
 		IntArgs: map[string]int{
 			"kind": moveKind,
 		},
+	}
+}
+
+func NewMakeShootCommand() ClientInputCommand {
+	return ClientInputCommand{
+		Id:        InputCommandKind.MakeShoot,
+		FloatArgs: nil,
+		IntArgs:   nil,
 	}
 }

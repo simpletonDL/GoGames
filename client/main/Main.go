@@ -11,7 +11,7 @@ import (
 )
 
 func init() {
-	client.LoadImages("./assets")
+	client.LoadImages()
 }
 
 func main() {
