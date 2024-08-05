@@ -47,8 +47,17 @@ func (e *GameEngine) ScheduleCommand(cmd GameCommand) {
 
 type PlayerId uint8
 
+var PlayerDirection = struct {
+	Left  bool
+	Right bool
+}{
+	Left:  false,
+	Right: true,
+}
+
 type PlayerInfo struct {
-	Body *box2d.B2Body
+	Body      *box2d.B2Body
+	Direction bool // right=true, left=false
 }
 
 type GameEngineListener func(world *box2d.B2World)

@@ -16,6 +16,7 @@ type PlayerInputCommand struct {
 }
 
 func (c PlayerInputCommand) Execute(engine *GameEngine) {
+	playerInfo := engine.Players[c.PlayerId]
 	switch c.Cmd.Id {
 	case protocol.InputCommandKind.MouseClick:
 		x := c.Cmd.FloatArgs["x"]
@@ -23,18 +24,21 @@ func (c PlayerInputCommand) Execute(engine *GameEngine) {
 		fmt.Printf("processInputCommands: Click %f %f\n", x, y)
 		AddBox(engine.World, box2d.B2BodyType.B2_dynamicBody, x, y, 1, 1, 1, 1, 0.3)
 	case protocol.InputCommandKind.MoveHero:
-		playerBody := engine.Players[c.PlayerId].Body
+		playerBody := playerInfo.Body
 		playerVel := playerBody.GetLinearVelocity()
 
 		desiredVelX := playerVel.X
 		desiredVelY := playerVel.Y
 
 		moveKind := c.Cmd.IntArgs["kind"]
+		direction := playerInfo.Direction
 		switch moveKind {
 		case protocol.MoveHeroKind.Right:
 			desiredVelX = 5
+			direction = PlayerDirection.Right
 		case protocol.MoveHeroKind.Left:
 			desiredVelX = -5
+			direction = PlayerDirection.Left
 		case protocol.MoveHeroKind.Up:
 			desiredVelY = 10
 			//case protocol.MoveHeroKind.Down:
@@ -48,14 +52,19 @@ func (c PlayerInputCommand) Execute(engine *GameEngine) {
 			Y: playerBody.GetMass() * velChangeY,
 		}
 		playerBody.ApplyLinearImpulse(impulse, playerBody.GetWorldCenter(), true)
+		playerInfo.Direction = direction
 	case protocol.InputCommandKind.MakeShoot:
 		fmt.Printf("processInputCommands: Shoot\n")
-		playerBody := engine.Players[c.PlayerId].Body
+		playerBody := playerInfo.Body
 		playerPosition := playerBody.GetPosition()
-		userData := playerBody.GetUserData().(BodyUserData)
-		bullet := AddBullet(engine.World, playerPosition.X+userData.Width, playerPosition.Y, 0, 0.2, 0.2, playerBody)
-		bullet.SetLinearVelocity(box2d.B2Vec2{X: 15, Y: 0})
+		bullet := AddBullet(engine.World, playerPosition.X, playerPosition.Y, 0, 0.2, 0.2, playerBody)
+		velX := 15.0
+		if playerInfo.Direction == PlayerDirection.Left {
+			velX *= -1
+		}
+		bullet.SetLinearVelocity(box2d.B2Vec2{X: velX, Y: 0})
 	}
+	engine.Players[c.PlayerId] = playerInfo
 }
 
 type CreatePlayerCommand struct {
