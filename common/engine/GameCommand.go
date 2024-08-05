@@ -58,11 +58,13 @@ func (c PlayerInputCommand) Execute(engine *GameEngine) {
 		playerBody := playerInfo.Body
 		playerPosition := playerBody.GetPosition()
 		bullet := AddBullet(engine.World, playerPosition.X, playerPosition.Y, 0, 0.2, 0.2, playerBody)
-		velX := 15.0
+		bulletRotation := box2d.MakeB2RotFromAngle(playerBody.GetAngle())
+		bulletVec := box2d.MakeB2Vec2(bulletRotation.C, bulletRotation.S)
+		bulletVec.OperatorScalarMulInplace(15.0)
 		if playerInfo.Direction == PlayerDirection.Left {
-			velX *= -1
+			bulletVec.OperatorScalarMulInplace(-1.0)
 		}
-		bullet.SetLinearVelocity(box2d.B2Vec2{X: velX, Y: 0})
+		bullet.SetLinearVelocity(bulletVec)
 	}
 	engine.Players[c.PlayerId] = playerInfo
 }
