@@ -17,7 +17,7 @@ type GameProcessor struct {
 
 func NewGameProcessor() *GameProcessor {
 	processor := &GameProcessor{
-		GameEngine: engine.NewGameEngine(settings.ServerInputCapacity),
+		GameEngine: engine.NewGameEngine(settings.GameInputCapacity),
 		Clients:    []Client{},
 	}
 	// This callback sends new game state to client every timestamp
@@ -36,5 +36,5 @@ func NewGameProcessor() *GameProcessor {
 }
 
 func (p *GameProcessor) Run() {
-	p.GameEngine.Run(settings.ServerFPS, settings.VelocityIterations, settings.PositionIterations)
+	p.GameEngine.Run(settings.GameFPS, settings.VelocityIterations, settings.PositionIterations)
 }

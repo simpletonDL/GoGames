@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/ByteArena/box2d"
 	"github.com/simpletonDL/GoGames/common/protocol"
+	"github.com/simpletonDL/GoGames/common/settings"
 )
 
 type GameCommand interface {
@@ -22,7 +23,7 @@ func (c PlayerInputCommand) Execute(engine *GameEngine) {
 		x := c.Cmd.FloatArgs["x"]
 		y := c.Cmd.FloatArgs["y"]
 		fmt.Printf("processInputCommands: Click %f %f\n", x, y)
-		AddBox(engine.World, box2d.B2BodyType.B2_dynamicBody, x, y, 1, 1, 1, 1, 0.3)
+		AddBox(engine.World, box2d.B2BodyType.B2_dynamicBody, x, y, 1, 1, 1, 0.5, 0.3)
 	case protocol.InputCommandKind.MoveHero:
 		playerBody := playerInfo.Body
 		playerVel := playerBody.GetLinearVelocity()
@@ -34,13 +35,13 @@ func (c PlayerInputCommand) Execute(engine *GameEngine) {
 		direction := playerInfo.Direction
 		switch moveKind {
 		case protocol.MoveHeroKind.Right:
-			desiredVelX = 5
+			desiredVelX = min(playerVel.X+settings.PlayerHorizontalAccelerationPerFrame, settings.PlayerMaxHorizontalSpeed)
 			direction = PlayerDirection.Right
 		case protocol.MoveHeroKind.Left:
-			desiredVelX = -5
+			desiredVelX = max(playerVel.X-settings.PlayerHorizontalAccelerationPerFrame, -settings.PlayerMaxHorizontalSpeed)
 			direction = PlayerDirection.Left
 		case protocol.MoveHeroKind.Up:
-			desiredVelY = 10
+			desiredVelY = settings.PlayerJumpSpeed
 			//case protocol.MoveHeroKind.Down:
 			//	desiredVelY = -2
 		}
