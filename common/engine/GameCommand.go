@@ -54,6 +54,17 @@ func (c PlayerInputCommand) Execute(engine *GameEngine) {
 		}
 		playerBody.ApplyLinearImpulse(impulse, playerBody.GetWorldCenter(), true)
 		playerInfo.Direction = direction
+	case protocol.InputCommandKind.RotateHero:
+		playerBody := playerInfo.Body
+		kind := c.Cmd.IntArgs["kind"]
+		var desiredSpeed float64
+		switch kind {
+		case protocol.RotateHeroKind.Left:
+			desiredSpeed = settings.PlayerAngularSpeed
+		case protocol.RotateHeroKind.Right:
+			desiredSpeed = -settings.PlayerAngularSpeed
+		}
+		playerBody.SetAngularVelocity(desiredSpeed)
 	case protocol.InputCommandKind.MakeShoot:
 		fmt.Printf("processInputCommands: Shoot\n")
 		playerBody := playerInfo.Body
@@ -77,7 +88,7 @@ type CreatePlayerCommand struct {
 
 func (c CreatePlayerCommand) Execute(engine *GameEngine) {
 	// Hero body
-	body := AddHero(engine.World, 2, 15, 0.6, 1, 1, 0.3)
+	body := AddHero(engine.World, 2, 15, 0.8, 1, 1, 0.3)
 	engine.Players[c.PlayerId] = PlayerInfo{Body: body}
 	fmt.Printf("createPlayerCommand: id=%d\n", c.PlayerId)
 }

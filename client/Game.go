@@ -63,6 +63,20 @@ func (g *Game) Update() error {
 			log.Printf("Failed to serialize message to JSON: %v\n", err)
 		}
 	}
+	if ebiten.IsKeyPressed(ebiten.KeyO) {
+		message := protocol.NewRotateHeroCommand(protocol.RotateHeroKind.Left)
+		err := encoder.Encode(message)
+		if err != nil {
+			log.Printf("Failed to serialize message to JSON: %v\n", err)
+		}
+	}
+	if ebiten.IsKeyPressed(ebiten.KeyP) {
+		message := protocol.NewRotateHeroCommand(protocol.RotateHeroKind.Right)
+		err := encoder.Encode(message)
+		if err != nil {
+			log.Printf("Failed to serialize message to JSON: %v\n", err)
+		}
+	}
 	return nil
 }
 

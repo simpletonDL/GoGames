@@ -4,10 +4,12 @@ var InputCommandKind = struct {
 	MouseClick uint8
 	MoveHero   uint8
 	MakeShoot  uint8
+	RotateHero uint8
 }{
 	MouseClick: 0,
 	MoveHero:   1,
 	MakeShoot:  2,
+	RotateHero: 3,
 }
 
 type GameInput []ClientInputCommand
@@ -54,5 +56,22 @@ func NewMakeShootCommand() ClientInputCommand {
 		Id:        InputCommandKind.MakeShoot,
 		FloatArgs: nil,
 		IntArgs:   nil,
+	}
+}
+
+var RotateHeroKind = struct {
+	Left  int // counterclockwise
+	Right int // clockwise
+}{
+	Left:  0,
+	Right: 1,
+}
+
+func NewRotateHeroCommand(rotateKind int) ClientInputCommand {
+	return ClientInputCommand{
+		Id: InputCommandKind.RotateHero,
+		IntArgs: map[string]int{
+			"kind": rotateKind,
+		},
 	}
 }

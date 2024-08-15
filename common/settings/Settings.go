@@ -1,6 +1,9 @@
 package settings
 
-import "time"
+import (
+	"math"
+	"time"
+)
 
 const (
 	/* Game size parameters */
@@ -24,6 +27,8 @@ const (
 	PlayerGetMaxHorizontalSpeedTime = time.Millisecond * 300
 
 	PlayerJumpSpeed = 10.0
+
+	PlayerAngularSpeed = math.Pi
 )
 
 /* Inferred parameters */
