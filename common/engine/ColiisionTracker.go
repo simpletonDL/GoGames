@@ -14,7 +14,22 @@ func NewCollisionTracker(engine *GameEngine) CollisionTracker {
 	return CollisionTracker{engine: engine}
 }
 
-func (c CollisionTracker) BeginContact(contact box2d.B2ContactInterface) {}
+func (c CollisionTracker) BeginContact(contact box2d.B2ContactInterface) {
+	bodyA := contact.GetFixtureA().GetBody()
+	bodyB := contact.GetFixtureB().GetBody()
+	userDataA := bodyA.GetUserData().(BodyUserData)
+	userDataB := bodyB.GetUserData().(BodyUserData)
+
+	if userDataA.Kind == protocol.BodyKind.Hero && userDataB.Kind == protocol.BodyKind.Platform ||
+		userDataA.Kind == protocol.BodyKind.Platform && userDataB.Kind == protocol.BodyKind.Hero {
+		// Make sure that bodyA is a hero
+		if userDataB.Kind == protocol.BodyKind.Hero {
+			bodyA, bodyB = bodyB, bodyA
+			userDataA, userDataB = userDataB, userDataA
+			c.processHeroWithPlatformContact(contact, bodyA, bodyB)
+		}
+	}
+}
 
 func (c CollisionTracker) EndContact(contact box2d.B2ContactInterface) {}
 
@@ -24,37 +39,42 @@ func (c CollisionTracker) PreSolve(contact box2d.B2ContactInterface, oldManifold
 	userDataA := bodyA.GetUserData().(BodyUserData)
 	userDataB := bodyB.GetUserData().(BodyUserData)
 
-	// At lease one body should be a bullet
-	if userDataA.Kind != protocol.BodyKind.Bullet && userDataB.Kind != protocol.BodyKind.Bullet {
-		return
+	if userDataA.Kind == protocol.BodyKind.Bullet || userDataB.Kind == protocol.BodyKind.Bullet {
+		// Make sure that bodyA is a bullet
+		if userDataB.Kind == protocol.BodyKind.Bullet {
+			bodyA, bodyB = bodyB, bodyA
+			userDataA, userDataB = userDataB, userDataA
+		}
+		c.processBulletContact(contact, bodyA, bodyB)
 	}
+}
 
-	// Make sure that bodyA is a bullet
-	if userDataB.Kind == protocol.BodyKind.Bullet {
-		bodyA, bodyB = bodyB, bodyA
-		userDataA, userDataB = userDataB, userDataA
-	}
+func (c CollisionTracker) PostSolve(contact box2d.B2ContactInterface, impulse *box2d.B2ContactImpulse) {
+}
 
-	if bodyB == userDataA.Owner {
+func (c CollisionTracker) processBulletContact(contact box2d.B2ContactInterface, bulletBody *box2d.B2Body, otherBody *box2d.B2Body) {
+	bulletUserData := bulletBody.GetUserData().(BodyUserData)
+	otherUserData := otherBody.GetUserData().(BodyUserData)
+	if otherBody == bulletUserData.Owner {
 		// bullets should not contact with their owners
 		contact.SetEnabled(false)
 		return
 	}
 
-	fmt.Printf("Bullet(%f, %f) contact\n", bodyA.GetPosition().X, bodyA.GetPosition().Y)
+	fmt.Printf("Bullet(%f, %f) contact\n", bulletBody.GetPosition().X, bulletBody.GetPosition().Y)
 	contact.SetEnabled(false)
-	c.engine.ScheduleCommand(RemoveBodyCommand{body: bodyA})
-	if userDataB.Kind == protocol.BodyKind.Bullet {
-		c.engine.ScheduleCommand(RemoveBodyCommand{body: bodyB})
+	c.engine.ScheduleCommand(RemoveBodyCommand{body: bulletBody})
+	if otherUserData.Kind == protocol.BodyKind.Bullet {
+		//c.engine.ScheduleCommand(RemoveBodyCommand{body: otherBody})
 	} else {
 		var worldManifold box2d.B2WorldManifold
 		contact.GetWorldManifold(&worldManifold)
 		if contact.GetManifold().PointCount > 0 {
 			collisionPoint := worldManifold.Points[0]
 			fmt.Printf("Collision point: (%f, %f)\n", collisionPoint.X, collisionPoint.Y)
-			fmt.Printf("Body world center: (%f, %f)", bodyB.GetWorldCenter().X, bodyB.GetWorldCenter().Y)
+			fmt.Printf("Body world center: (%f, %f)", otherBody.GetWorldCenter().X, otherBody.GetWorldCenter().Y)
 			c.engine.ScheduleCommand(ApplyImpulseCommand{
-				body:    bodyB,
+				body:    otherBody,
 				point:   collisionPoint,
 				impulse: box2d.B2Vec2{X: 7, Y: 0},
 			})
@@ -62,5 +82,20 @@ func (c CollisionTracker) PreSolve(contact box2d.B2ContactInterface, oldManifold
 	}
 }
 
-func (c CollisionTracker) PostSolve(contact box2d.B2ContactInterface, impulse *box2d.B2ContactImpulse) {
+func (c CollisionTracker) processHeroWithPlatformContact(contact box2d.B2ContactInterface, heroBody *box2d.B2Body, platformBody *box2d.B2Body) {
+	var woldManifold box2d.B2WorldManifold
+	contact.GetWorldManifold(&woldManifold)
+	println("Contact started")
+	for i := 0; i < len(woldManifold.Points); i++ {
+		contactPoint := woldManifold.Points[i]
+		contactPointVel := heroBody.GetLinearVelocityFromWorldPoint(contactPoint)
+		fmt.Printf("Point %d velocity: %f %f\n", i, contactPointVel.X, contactPointVel.Y)
+		if contactPointVel.Y < 0 {
+			// Since this method is called in BeginContact its mean that hero first time contact with platform,
+			// and he is falling down => preserve contact
+			return
+		}
+	}
+	// All contact points are moving up
+	contact.SetEnabled(true)
 }

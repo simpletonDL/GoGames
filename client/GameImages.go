@@ -22,12 +22,16 @@ var (
 
 	//go:embed assets/paintball.png
 	bullet []byte
+
+	//go:embed assets/platform.png
+	platform []byte
 )
 
 var (
 	BackgroundImage *ebiten.Image
 	PlayerImage     *ebiten.Image
 	BulletImage     *ebiten.Image
+	PlatformImage   *ebiten.Image
 	BoxImage        *ebiten.Image
 	HeroImage       *ebiten.Image
 )
@@ -45,4 +49,5 @@ func LoadImages() {
 	BoxImage = LoadImage(boxImageRaw)
 	HeroImage = LoadImage(hero)
 	BulletImage = LoadImage(bullet)
+	PlatformImage = LoadImage(platform)
 }

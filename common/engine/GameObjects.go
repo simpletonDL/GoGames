@@ -13,9 +13,15 @@ type BodyUserData struct {
 	Owner *box2d.B2Body
 }
 
-func AddBox(world *box2d.B2World, bodyType uint8, x float64, y float64, angel float64, width float64, height float64, density float64, friction float64) *box2d.B2Body {
-	body := addRectangle(world, bodyType, x, y, angel, width, height, density, friction)
+func AddBox(world *box2d.B2World, x float64, y float64, angel float64, width float64, height float64, density float64, friction float64) *box2d.B2Body {
+	body := addRectangle(world, box2d.B2BodyType.B2_dynamicBody, x, y, angel, width, height, density, friction)
 	body.SetUserData(BodyUserData{Width: width, Height: height, Kind: protocol.BodyKind.Box})
+	return body
+}
+
+func AddPlatform(world *box2d.B2World, x float64, y float64, angel float64, width float64, height float64, density float64, friction float64) *box2d.B2Body {
+	body := addRectangle(world, box2d.B2BodyType.B2_staticBody, x, y, angel, width, height, density, friction)
+	body.SetUserData(BodyUserData{Width: width, Height: height, Kind: protocol.BodyKind.Platform})
 	return body
 }
 
@@ -26,7 +32,7 @@ func AddHero(world *box2d.B2World, x float64, y float64, width float64, height f
 }
 
 func AddBullet(world *box2d.B2World, x float64, y float64, angel float64, width float64, height float64, owner *box2d.B2Body) *box2d.B2Body {
-	bullet := AddBox(world, box2d.B2BodyType.B2_kinematicBody, x, y, 0, width, height, 1, 1)
+	bullet := addRectangle(world, box2d.B2BodyType.B2_kinematicBody, x, y, 0, width, height, 1, 1)
 	bullet.SetUserData(BodyUserData{Width: width, Height: height, Kind: protocol.BodyKind.Bullet, Owner: owner})
 	bullet.SetBullet(true)
 	return bullet
@@ -58,10 +64,12 @@ func NewWorld(gravityX float64, gravityY float64) *box2d.B2World {
 func createInitialWorld() *box2d.B2World {
 	world := NewWorld(0, -20)
 	// Ground body
-	AddBox(world, box2d.B2BodyType.B2_staticBody, 8, 1, 0, 16, 2, 0, 1)
+	AddPlatform(world, 8, 1, 0, 16, 1, 0, 1)
+
+	AddPlatform(world, 8, 5, 0, 7, 1, 0, 1)
 
 	// Dynamic body
-	AddBox(world, box2d.B2BodyType.B2_dynamicBody, 8, 15, 1, 1, 1, 1, 0.3)
+	AddBox(world, 8, 15, 1, 1, 1, 1, 0.3)
 
 	return world
 }

@@ -23,7 +23,7 @@ func (c PlayerInputCommand) Execute(engine *GameEngine) {
 		x := c.Cmd.FloatArgs["x"]
 		y := c.Cmd.FloatArgs["y"]
 		fmt.Printf("processInputCommands: Click %f %f\n", x, y)
-		AddBox(engine.World, box2d.B2BodyType.B2_dynamicBody, x, y, 1, 1, 1, 0.5, 0.3)
+		AddBox(engine.World, x, y, 1, 1, 1, 0.5, 0.3)
 	case protocol.InputCommandKind.MoveHero:
 		playerBody := playerInfo.Body
 		playerVel := playerBody.GetLinearVelocity()
