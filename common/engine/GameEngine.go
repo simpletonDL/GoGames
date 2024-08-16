@@ -59,6 +59,7 @@ type PlayerInfo struct {
 	Body                  *box2d.B2Body
 	Direction             bool // right=true, left=false
 	MoveDownThrowPlatform bool
+	JumpCount             int8
 }
 
 type GameEngineListener func(world protocol.GameState)

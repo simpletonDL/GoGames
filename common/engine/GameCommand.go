@@ -41,9 +41,12 @@ func (c PlayerInputCommand) Execute(engine *GameEngine) {
 			desiredVelX = max(playerVel.X-settings.PlayerHorizontalAccelerationPerFrame, -settings.PlayerMaxHorizontalSpeed)
 			direction = PlayerDirection.Left
 		case protocol.MoveHeroKind.Up:
-			desiredVelY = settings.PlayerJumpSpeed
+			if playerInfo.JumpCount > 0 {
+				desiredVelY = settings.PlayerJumpSpeed
+				playerInfo.JumpCount--
+			}
 		case protocol.MoveHeroKind.Down:
-			engine.Players[c.PlayerId].MoveDownThrowPlatform = true
+			playerInfo.MoveDownThrowPlatform = true
 			desiredVelY = min(settings.PlayerDownSpeed, playerVel.Y)
 		}
 
@@ -90,7 +93,12 @@ type CreatePlayerCommand struct {
 func (c CreatePlayerCommand) Execute(engine *GameEngine) {
 	// Hero body
 	body := AddHero(engine.World, 2, 15, 0.8, 1, 1, 0.3, c.PlayerId)
-	engine.Players[c.PlayerId] = &PlayerInfo{Body: body}
+	engine.Players[c.PlayerId] = &PlayerInfo{
+		Body:                  body,
+		Direction:             PlayerDirection.Right,
+		MoveDownThrowPlatform: false,
+		JumpCount:             settings.PlayerMaxJumpCount,
+	}
 	fmt.Printf("createPlayerCommand: id=%d\n", c.PlayerId)
 }
 

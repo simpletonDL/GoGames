@@ -3,6 +3,7 @@ package engine
 import (
 	"fmt"
 	"github.com/simpletonDL/GoGames/common/protocol"
+	"github.com/simpletonDL/GoGames/common/settings"
 	"github.com/simpletonDL/box2d"
 )
 
@@ -29,6 +30,15 @@ func (c CollisionTracker) BeginContact(contact box2d.B2ContactInterface) {
 		}
 		c.processHeroWithPlatformBeginContact(contact, bodyA, userDataA, bodyB)
 	}
+	if userDataA.Kind == protocol.BodyKind.Hero && bodyB.M_type != box2d.B2BodyType.B2_kinematicBody ||
+		bodyA.M_type != box2d.B2BodyType.B2_kinematicBody && userDataB.Kind == protocol.BodyKind.Hero {
+		// Make sure that bodyA is a hero
+		if userDataB.Kind == protocol.BodyKind.Hero {
+			bodyA, bodyB = bodyB, bodyA
+			userDataA, userDataB = userDataB, userDataA
+		}
+		c.processHeroWithStaticOrDynamicBodyBeginContact(contact, bodyA, userDataA, bodyB)
+	}
 }
 
 func (c CollisionTracker) EndContact(contact box2d.B2ContactInterface) {}
@@ -45,7 +55,7 @@ func (c CollisionTracker) PreSolve(contact box2d.B2ContactInterface, oldManifold
 			bodyA, bodyB = bodyB, bodyA
 			userDataA, userDataB = userDataB, userDataA
 		}
-		c.processBulletContact(contact, bodyA, bodyB)
+		c.processBulletPreSolveContact(contact, bodyA, bodyB)
 	}
 	if userDataA.Kind == protocol.BodyKind.Hero && userDataB.Kind == protocol.BodyKind.Platform ||
 		userDataA.Kind == protocol.BodyKind.Platform && userDataB.Kind == protocol.BodyKind.Hero {
@@ -61,7 +71,7 @@ func (c CollisionTracker) PreSolve(contact box2d.B2ContactInterface, oldManifold
 func (c CollisionTracker) PostSolve(contact box2d.B2ContactInterface, impulse *box2d.B2ContactImpulse) {
 }
 
-func (c CollisionTracker) processBulletContact(contact box2d.B2ContactInterface, bulletBody *box2d.B2Body, otherBody *box2d.B2Body) {
+func (c CollisionTracker) processBulletPreSolveContact(contact box2d.B2ContactInterface, bulletBody *box2d.B2Body, otherBody *box2d.B2Body) {
 	bulletUserData := bulletBody.GetUserData().(BodyUserData)
 	otherUserData := otherBody.GetUserData().(BodyUserData)
 	if otherBody == bulletUserData.Owner {
@@ -99,10 +109,10 @@ func (c CollisionTracker) processHeroWithPlatformBeginContact(contact box2d.B2Co
 	contact.GetWorldManifold(&woldManifold)
 
 	platformY := platformBody.GetPosition().Y
-	for i := 0; i < len(woldManifold.Points); i++ {
+	for i := 0; i < contact.GetManifold().PointCount; i++ {
 		contactPointY := woldManifold.Points[i].Y
 		if contactPointY > platformY {
-			// Since this method is called in BeginContact its mean that hero first time contact with platform.
+			// Since this method is called in BeginContact it means that hero first time contact with platform.
 			// If contact point is upper that platform center then its mean that we should preserve contact.
 			return
 		}
@@ -117,4 +127,21 @@ func (c CollisionTracker) processHeroWithPlatformPreSolveContact(contact box2d.B
 		contact.SetEnabled(false)
 	}
 	playerInfo.MoveDownThrowPlatform = false
+}
+
+func (c CollisionTracker) processHeroWithStaticOrDynamicBodyBeginContact(contact box2d.B2ContactInterface, heroBody *box2d.B2Body, heroUserData BodyUserData, otherBody *box2d.B2Body) {
+	otherBodyY := otherBody.GetPosition().Y
+
+	var woldManifold box2d.B2WorldManifold
+	contact.GetWorldManifold(&woldManifold)
+
+	for i := 0; i < contact.GetManifold().PointCount; i++ {
+		contactPointY := woldManifold.Points[i].Y
+		if contactPointY < otherBodyY {
+			return
+		}
+	}
+	// All contact points are over platform/box/e.t.c.
+	playerInfo := c.engine.Players[heroUserData.HeroId]
+	playerInfo.JumpCount = settings.PlayerMaxJumpCount
 }
