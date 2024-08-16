@@ -36,7 +36,7 @@ func (e *GameEngine) Run(fps int, velocityIterations int, positionIterations int
 		}
 		e.World.Step(timestamp, velocityIterations, positionIterations)
 		for _, listener := range e.Listeners {
-			listener(e.World)
+			listener(B2WorldToGameState(e.World))
 		}
 	}
 }
@@ -60,7 +60,7 @@ type PlayerInfo struct {
 	Direction bool // right=true, left=false
 }
 
-type GameEngineListener func(world *box2d.B2World)
+type GameEngineListener func(world protocol.GameState)
 
 func (e *GameEngine) AddListener(listener GameEngineListener) {
 	e.Listeners = append(e.Listeners, listener)

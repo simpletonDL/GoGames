@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/simpletonDL/GoGames/common/engine"
+	"github.com/simpletonDL/GoGames/common/protocol"
 	"github.com/simpletonDL/GoGames/common/settings"
-	"github.com/simpletonDL/box2d"
 )
 
 /* Game step processing */
@@ -21,10 +21,9 @@ func NewGameProcessor() *GameProcessor {
 		Clients:    []Client{},
 	}
 	// This callback sends new game state to client every timestamp
-	processor.GameEngine.AddListener(func(world *box2d.B2World) {
+	processor.GameEngine.AddListener(func(gameState protocol.GameState) {
 		for _, client := range processor.Clients {
 			encoder := json.NewEncoder(client.conn)
-			gameState := engine.B2WorldToGameState(world)
 			err := encoder.Encode(gameState)
 			if err != nil {
 				// TODO: remove client on disconnection
