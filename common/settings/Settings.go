@@ -27,6 +27,7 @@ const (
 	PlayerGetMaxHorizontalSpeedTime = time.Millisecond * 300
 
 	PlayerJumpSpeed = 10.0
+	PlayerDownSpeed = -7.0
 
 	PlayerAngularSpeed = math.Pi
 )

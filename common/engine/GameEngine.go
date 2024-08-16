@@ -9,7 +9,7 @@ import (
 type GameEngine struct {
 	Input     chan GameCommand
 	World     *box2d.B2World
-	Players   map[PlayerId]PlayerInfo
+	Players   map[PlayerId]*PlayerInfo
 	Listeners []GameEngineListener
 }
 
@@ -17,7 +17,7 @@ func NewGameEngine(inputCapacity int) *GameEngine {
 	engine := &GameEngine{
 		World:     createInitialWorld(),
 		Input:     make(chan GameCommand, inputCapacity),
-		Players:   map[PlayerId]PlayerInfo{},
+		Players:   map[PlayerId]*PlayerInfo{},
 		Listeners: []GameEngineListener{},
 	}
 	// Add collision logic
@@ -56,8 +56,9 @@ var PlayerDirection = struct {
 }
 
 type PlayerInfo struct {
-	Body      *box2d.B2Body
-	Direction bool // right=true, left=false
+	Body                  *box2d.B2Body
+	Direction             bool // right=true, left=false
+	MoveDownThrowPlatform bool
 }
 
 type GameEngineListener func(world protocol.GameState)

@@ -26,8 +26,8 @@ func (c CollisionTracker) BeginContact(contact box2d.B2ContactInterface) {
 		if userDataB.Kind == protocol.BodyKind.Hero {
 			bodyA, bodyB = bodyB, bodyA
 			userDataA, userDataB = userDataB, userDataA
-			c.processHeroWithPlatformContact(contact, bodyA, bodyB)
 		}
+		c.processHeroWithPlatformBeginContact(contact, bodyA, userDataA, bodyB)
 	}
 }
 
@@ -46,6 +46,15 @@ func (c CollisionTracker) PreSolve(contact box2d.B2ContactInterface, oldManifold
 			userDataA, userDataB = userDataB, userDataA
 		}
 		c.processBulletContact(contact, bodyA, bodyB)
+	}
+	if userDataA.Kind == protocol.BodyKind.Hero && userDataB.Kind == protocol.BodyKind.Platform ||
+		userDataA.Kind == protocol.BodyKind.Platform && userDataB.Kind == protocol.BodyKind.Hero {
+		// Make sure that bodyA is a hero
+		if userDataB.Kind == protocol.BodyKind.Hero {
+			bodyA, bodyB = bodyB, bodyA
+			userDataA, userDataB = userDataB, userDataA
+		}
+		c.processHeroWithPlatformPreSolveContact(contact, userDataA)
 	}
 }
 
@@ -82,7 +91,10 @@ func (c CollisionTracker) processBulletContact(contact box2d.B2ContactInterface,
 	}
 }
 
-func (c CollisionTracker) processHeroWithPlatformContact(contact box2d.B2ContactInterface, heroBody *box2d.B2Body, platformBody *box2d.B2Body) {
+func (c CollisionTracker) processHeroWithPlatformBeginContact(contact box2d.B2ContactInterface, heroBody *box2d.B2Body, heroUserData BodyUserData, platformBody *box2d.B2Body) {
+	// Don't allow player to move down through platform in case of contact begin
+	c.engine.Players[heroUserData.HeroId].MoveDownThrowPlatform = false
+
 	var woldManifold box2d.B2WorldManifold
 	contact.GetWorldManifold(&woldManifold)
 
@@ -97,4 +109,12 @@ func (c CollisionTracker) processHeroWithPlatformContact(contact box2d.B2Contact
 	}
 	// All contact points are under platform
 	contact.SetEnabled(false)
+}
+
+func (c CollisionTracker) processHeroWithPlatformPreSolveContact(contact box2d.B2ContactInterface, heroUserData BodyUserData) {
+	playerInfo := c.engine.Players[heroUserData.HeroId]
+	if playerInfo.MoveDownThrowPlatform {
+		contact.SetEnabled(false)
+	}
+	playerInfo.MoveDownThrowPlatform = false
 }

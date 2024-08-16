@@ -9,6 +9,8 @@ type BodyUserData struct {
 	Width  float64
 	Height float64
 	Kind   uint8
+	// For case when Kind is Hero
+	HeroId PlayerId
 	// Bodies don't collide with their owner (for skip collisions between player and created by him bullets)
 	Owner *box2d.B2Body
 }
@@ -25,9 +27,9 @@ func AddPlatform(world *box2d.B2World, x float64, y float64, angel float64, widt
 	return body
 }
 
-func AddHero(world *box2d.B2World, x float64, y float64, width float64, height float64, density float64, friction float64) *box2d.B2Body {
+func AddHero(world *box2d.B2World, x float64, y float64, width float64, height float64, density float64, friction float64, id PlayerId) *box2d.B2Body {
 	hero := addRectangle(world, box2d.B2BodyType.B2_dynamicBody, x, y, 0, width, height, density, friction)
-	hero.SetUserData(BodyUserData{Width: width, Height: height, Kind: protocol.BodyKind.Hero})
+	hero.SetUserData(BodyUserData{Width: width, Height: height, Kind: protocol.BodyKind.Hero, HeroId: id})
 	return hero
 }
 
