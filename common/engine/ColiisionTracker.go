@@ -2,8 +2,8 @@ package engine
 
 import (
 	"fmt"
-	"github.com/ByteArena/box2d"
 	"github.com/simpletonDL/GoGames/common/protocol"
+	"github.com/simpletonDL/box2d"
 )
 
 type CollisionTracker struct {
@@ -85,17 +85,16 @@ func (c CollisionTracker) processBulletContact(contact box2d.B2ContactInterface,
 func (c CollisionTracker) processHeroWithPlatformContact(contact box2d.B2ContactInterface, heroBody *box2d.B2Body, platformBody *box2d.B2Body) {
 	var woldManifold box2d.B2WorldManifold
 	contact.GetWorldManifold(&woldManifold)
-	println("Contact started")
+
+	platformY := platformBody.GetPosition().Y
 	for i := 0; i < len(woldManifold.Points); i++ {
-		contactPoint := woldManifold.Points[i]
-		contactPointVel := heroBody.GetLinearVelocityFromWorldPoint(contactPoint)
-		fmt.Printf("Point %d velocity: %f %f\n", i, contactPointVel.X, contactPointVel.Y)
-		if contactPointVel.Y < 0 {
-			// Since this method is called in BeginContact its mean that hero first time contact with platform,
-			// and he is falling down => preserve contact
+		contactPointY := woldManifold.Points[i].Y
+		if contactPointY > platformY {
+			// Since this method is called in BeginContact its mean that hero first time contact with platform.
+			// If contact point is upper that platform center then its mean that we should preserve contact.
 			return
 		}
 	}
-	// All contact points are moving up
-	contact.SetEnabled(true)
+	// All contact points are under platform
+	contact.SetEnabled(false)
 }

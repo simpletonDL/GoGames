@@ -3,9 +3,9 @@ package server
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ByteArena/box2d"
 	"github.com/simpletonDL/GoGames/common/engine"
 	"github.com/simpletonDL/GoGames/common/settings"
+	"github.com/simpletonDL/box2d"
 )
 
 /* Game step processing */

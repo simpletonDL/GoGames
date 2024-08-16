@@ -2,9 +2,9 @@ package engine
 
 import (
 	"fmt"
-	"github.com/ByteArena/box2d"
 	"github.com/simpletonDL/GoGames/common/protocol"
 	"github.com/simpletonDL/GoGames/common/settings"
+	"github.com/simpletonDL/box2d"
 )
 
 type GameCommand interface {

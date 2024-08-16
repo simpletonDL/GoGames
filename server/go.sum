@@ -4,3 +4,5 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/simpletonDL/GoGames/common v0.1.1 h1:RnzC3F/GIFZ3yRPWKaTt2qRUZzzt+Dwx7FXxwjiwmxo=
 github.com/simpletonDL/GoGames/common v0.1.1/go.mod h1:Ly3Xv3ijMacynksf/NGpJLcRiAvBLFr0rBopDPxheIM=
+github.com/simpletonDL/box2d v1.0.2 h1:8tqZSwgWVIYUfpFDmXCcseXKJklpxpBNBRqoHYd+/Nc=
+github.com/simpletonDL/box2d v1.0.2/go.mod h1:kS6u1XM5knpaNXNIWrOBJb2KYU7jk0ZiNuaGylROM/g=

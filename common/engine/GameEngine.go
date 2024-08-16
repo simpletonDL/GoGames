@@ -1,8 +1,8 @@
 package engine
 
 import (
-	"github.com/ByteArena/box2d"
 	"github.com/simpletonDL/GoGames/common/protocol"
+	"github.com/simpletonDL/box2d"
 	"time"
 )
 
