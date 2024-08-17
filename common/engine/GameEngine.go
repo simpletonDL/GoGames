@@ -39,7 +39,7 @@ func (e *GameEngine) Run(fps int, velocityIterations int, positionIterations int
 		e.World.Step(timestamp, velocityIterations, positionIterations)
 		e.processOutOfScreenBodies()
 		for _, listener := range e.Listeners {
-			listener(B2WorldToGameState(e.World))
+			listener(GetGameState(e))
 		}
 	}
 }
@@ -83,10 +83,16 @@ func (e *GameEngine) collectAllGameCommandsNonBlocking() []GameCommand {
 	}
 }
 
-func B2WorldToGameState(world *box2d.B2World) protocol.GameState {
+func GetGameState(engine *GameEngine) protocol.GameState {
+	world := engine.World
 	gameObjects := make([]protocol.GameObject, world.GetBodyCount())
 	for body := world.GetBodyList(); body != nil; body = body.M_next {
 		data := body.GetUserData().(BodyUserData)
+		direction := true
+		if data.Kind == protocol.BodyKind.Hero {
+			direction = engine.Players[data.HeroId].Direction
+		}
+
 		object := protocol.GameObject{
 			XPos:      body.GetPosition().X,
 			YPos:      body.GetPosition().Y,
@@ -94,6 +100,7 @@ func B2WorldToGameState(world *box2d.B2World) protocol.GameState {
 			ImageKind: data.Kind,
 			Width:     data.Width,
 			Height:    data.Height,
+			Direction: direction,
 		}
 		gameObjects = append(gameObjects, object)
 	}

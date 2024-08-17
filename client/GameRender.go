@@ -7,11 +7,14 @@ import (
 	"github.com/simpletonDL/GoGames/common/settings"
 )
 
-func MakeImageOptions(image *ebiten.Image, width float64, height float64, xPos float64, yPos float64, angel float64) *ebiten.DrawImageOptions {
+func MakeImageOptions(image *ebiten.Image, width float64, height float64, xPos float64, yPos float64, angel float64, inverseX bool) *ebiten.DrawImageOptions {
 	originWidth, originHeight := image.Bounds().Dx(), image.Bounds().Dy()
 	options := &ebiten.DrawImageOptions{}
 	options.GeoM.Scale(width/float64(originWidth), height/float64(originHeight))
 	options.GeoM.Translate(-width/2, -height/2)
+	if inverseX {
+		options.GeoM.Scale(-1, 1)
+	}
 	options.GeoM.Rotate(angel)
 	options.GeoM.Translate(xPos, yPos)
 	return options
@@ -37,7 +40,7 @@ func Render(image *ebiten.Image, state *protocol.GameState) {
 		}
 
 		objOptions := MakeImageOptions(objImage, obj.Width*scaleX, obj.Height*scaleY,
-			obj.XPos*scaleX, float64(image.Bounds().Dy())-obj.YPos*scaleY, -obj.Angel)
+			obj.XPos*scaleX, float64(image.Bounds().Dy())-obj.YPos*scaleY, -obj.Angel, obj.Direction == false)
 		image.DrawImage(objImage, objOptions)
 	}
 }

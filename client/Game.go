@@ -89,7 +89,7 @@ func (g *Game) Update() error {
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	backgroundOptions := MakeImageOptions(BackgroundImage, settings.ScreenWidth, settings.ScreenHeight,
-		settings.ScreenWidth/2, settings.ScreenHeight/2, 0)
+		settings.ScreenWidth/2, settings.ScreenHeight/2, 0, false)
 	screen.DrawImage(BackgroundImage, backgroundOptions)
 	Render(screen, &g.GameState)
 }

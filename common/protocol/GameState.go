@@ -28,4 +28,5 @@ type GameObject struct {
 	Angel         float64
 	ImageKind     uint8
 	Width, Height float64
+	Direction     bool
 }
