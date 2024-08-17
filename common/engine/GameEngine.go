@@ -2,7 +2,9 @@ package engine
 
 import (
 	"github.com/simpletonDL/GoGames/common/protocol"
+	"github.com/simpletonDL/GoGames/common/settings"
 	"github.com/simpletonDL/box2d"
+	"math/rand"
 	"time"
 )
 
@@ -35,6 +37,7 @@ func (e *GameEngine) Run(fps int, velocityIterations int, positionIterations int
 			command.Execute(e)
 		}
 		e.World.Step(timestamp, velocityIterations, positionIterations)
+		e.processOutOfScreenBodies()
 		for _, listener := range e.Listeners {
 			listener(B2WorldToGameState(e.World))
 		}
@@ -96,5 +99,32 @@ func B2WorldToGameState(world *box2d.B2World) protocol.GameState {
 	}
 	return protocol.GameState{
 		Objects: gameObjects,
+	}
+}
+
+func (e *GameEngine) processOutOfScreenBodies() {
+	for body := e.World.GetBodyList(); body != nil; body = body.M_next {
+		bodyIsOutOfBound := false
+		x := body.GetPosition().X
+		y := body.GetPosition().Y
+		if x < 0-settings.OutOfScreenBound || x > settings.WorldWidth+settings.OutOfScreenBound {
+			bodyIsOutOfBound = true
+		}
+		if y < 0-settings.OutOfScreenBound || y > settings.WorldHeight+settings.OutOfScreenBound {
+			bodyIsOutOfBound = true
+		}
+		if bodyIsOutOfBound {
+			userData := body.GetUserData().(BodyUserData)
+			if userData.Kind == protocol.BodyKind.Hero {
+				// respawn hero, TODO: decrement life count
+				newX := rand.Uint32() % settings.WorldWidth
+				newY := settings.WorldHeight
+				body.SetTransform(box2d.B2Vec2{X: float64(newX), Y: float64(newY)}, 0)
+				body.SetLinearVelocity(box2d.B2Vec2{X: 0, Y: 0})
+			} else {
+				// remove body
+				e.World.DestroyBody(body)
+			}
+		}
 	}
 }

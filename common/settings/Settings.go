@@ -13,6 +13,8 @@ const (
 	ScreenWidth  = 800
 	ScreenHeight = 800
 
+	OutOfScreenBound = 6
+
 	GameInputCapacity = 1000
 	GameFPS           = 60
 
