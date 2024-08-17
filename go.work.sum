@@ -14,9 +14,8 @@ github.com/jfreymuth/vorbis v1.0.2 h1:m1xH6+ZI4thH927pgKD8JOH4eaGRm18rEE9/0WKjvN
 github.com/jfreymuth/vorbis v1.0.2/go.mod h1:DoftRo4AznKnShRl1GxiTFCseHr4zR9BN3TWXyuzrqQ=
 github.com/kisielk/errcheck v1.7.0 h1:+SbscKmWJ5mOK/bO1zS60F5I9WwZDWOfRsC4RwfwRV0=
 github.com/kisielk/errcheck v1.7.0/go.mod h1:1kLL+jV4e+CFfueBmI1dSK2ADDyQnlrnrY/FqKluHJQ=
+github.com/simpletonDL/GoGames/common v0.1.2/go.mod h1:zMDwvc6laBxmGjqTiBFBwSyewE2K1BSOKREz2CFKirg=
 github.com/simpletonDL/box2d v1.0.2/go.mod h1:kS6u1XM5knpaNXNIWrOBJb2KYU7jk0ZiNuaGylROM/g=
-github.com/simpletonDL/box2d v1.0.3 h1:m+sqDV5wrfpxvM1esxpF84+E3OHkmxWR0QO3KQKv0Wc=
-github.com/simpletonDL/box2d v1.0.3/go.mod h1:kS6u1XM5knpaNXNIWrOBJb2KYU7jk0ZiNuaGylROM/g=
 golang.org/x/mod v0.17.0 h1:zY54UmvipHiNd+pm+m0x9KhZ9hl1/7QNMyxXbc6ICqA=
 golang.org/x/mod v0.17.0/go.mod h1:hTbmBsO62+eylJbnUtE2MGJUyE7QWk4xUqPFrRgJ+7c=
 golang.org/x/text v0.16.0 h1:a94ExnEXNtEwYLGJSIUxnWoxoRz/ZcCsV63ROupILh4=
