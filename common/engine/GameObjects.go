@@ -64,11 +64,15 @@ func NewWorld(gravityX float64, gravityY float64) *box2d.B2World {
 }
 
 func createInitialWorld() *box2d.B2World {
-	world := NewWorld(0, -20)
-	// Ground body
-	AddPlatform(world, 8, 1, 0, 16, 1, 0, 1)
+	// Create default map
 
-	AddPlatform(world, 8, 5, 0, 7, 1, 0, 1)
+	world := NewWorld(0, -20)
+	// Platforms
+	AddPlatform(world, 12, 1, 0, 22, 1, 0, 1)
+	AddPlatform(world, 12, 4.5, 0, 18, 1, 0, 1)
+	AddPlatform(world, 4, 8, 0, 7, 1, 0, 1)
+	AddPlatform(world, 20, 8, 0, 7, 1, 0, 1)
+	AddPlatform(world, 12, 12, 0, 7, 1, 0, 1)
 
 	// Dynamic body
 	AddBox(world, 8, 15, 1, 1, 1, 1, 0.3)

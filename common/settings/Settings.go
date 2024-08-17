@@ -8,9 +8,9 @@ import (
 const (
 	/* Game size parameters */
 
-	WorldWidth   = 16
+	WorldWidth   = 24
 	WorldHeight  = 16
-	ScreenWidth  = 800
+	ScreenWidth  = 1200
 	ScreenHeight = 800
 
 	OutOfScreenBound = 6
