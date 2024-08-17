@@ -45,7 +45,9 @@ func AddRandomBoxEvent(e *engine.GameEngine) {
 	ticker := time.NewTicker(time.Second * 10)
 	for {
 		<-ticker.C
-		x := rand.Uint32() % settings.WorldWidth
-		engine.AddBox(e.World, float64(x), settings.WorldHeight, 2, 1, 1, 0.5, 0.3)
+		e.ScheduleCommand(engine.NewCustomCommand(func(e *engine.GameEngine) {
+			x := rand.Uint32() % settings.WorldWidth
+			engine.AddBox(e.World, float64(x), settings.WorldHeight, 2, 1, 1, 0.5, 0.3)
+		}))
 	}
 }

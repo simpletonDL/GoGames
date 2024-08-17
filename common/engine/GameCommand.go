@@ -11,6 +11,20 @@ type GameCommand interface {
 	Execute(engine *GameEngine)
 }
 
+type CustomCommand struct {
+	ExecuteFun func(engine *GameEngine)
+}
+
+func (c CustomCommand) Execute(engine *GameEngine) {
+	c.Execute(engine)
+}
+
+func NewCustomCommand(execute func(engine *GameEngine)) *CustomCommand {
+	return &CustomCommand{
+		ExecuteFun: execute,
+	}
+}
+
 type PlayerInputCommand struct {
 	PlayerId PlayerId
 	Cmd      protocol.ClientInputCommand
