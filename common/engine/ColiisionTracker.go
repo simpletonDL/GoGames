@@ -84,7 +84,7 @@ func (c CollisionTracker) processBulletPreSolveContact(contact box2d.B2ContactIn
 	contact.SetEnabled(false)
 	c.engine.ScheduleCommand(RemoveBodyCommand{body: bulletBody})
 	if otherUserData.Kind == protocol.BodyKind.Bullet {
-		//c.engine.ScheduleCommand(RemoveBodyCommand{body: otherBody})
+		// Ignore contact with other bullets
 	} else {
 		var worldManifold box2d.B2WorldManifold
 		contact.GetWorldManifold(&worldManifold)
@@ -92,10 +92,13 @@ func (c CollisionTracker) processBulletPreSolveContact(contact box2d.B2ContactIn
 			collisionPoint := worldManifold.Points[0]
 			fmt.Printf("Collision point: (%f, %f)\n", collisionPoint.X, collisionPoint.Y)
 			fmt.Printf("Body world center: (%f, %f)", otherBody.GetWorldCenter().X, otherBody.GetWorldCenter().Y)
+			bulletVelocity := bulletBody.GetLinearVelocity()
+			bulletVelocity.Normalize()
+			bulletVelocity.OperatorScalarMulInplace(7)
 			c.engine.ScheduleCommand(ApplyImpulseCommand{
 				body:    otherBody,
 				point:   collisionPoint,
-				impulse: box2d.B2Vec2{X: 7, Y: 0},
+				impulse: bulletVelocity,
 			})
 		}
 	}
