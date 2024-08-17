@@ -16,7 +16,7 @@ type CustomCommand struct {
 }
 
 func (c CustomCommand) Execute(engine *GameEngine) {
-	c.Execute(engine)
+	c.ExecuteFun(engine)
 }
 
 func NewCustomCommand(execute func(engine *GameEngine)) *CustomCommand {
