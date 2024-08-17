@@ -50,17 +50,9 @@ func (e *GameEngine) ScheduleCommand(cmd GameCommand) {
 
 type PlayerId uint8
 
-var PlayerDirection = struct {
-	Left  bool
-	Right bool
-}{
-	Left:  false,
-	Right: true,
-}
-
 type PlayerInfo struct {
 	Body                  *box2d.B2Body
-	Direction             bool // right=true, left=false
+	Direction             protocol.DirectionKind
 	MoveDownThrowPlatform bool
 	JumpCount             int8
 }
@@ -88,7 +80,7 @@ func GetGameState(engine *GameEngine) protocol.GameState {
 	gameObjects := make([]protocol.GameObject, world.GetBodyCount())
 	for body := world.GetBodyList(); body != nil; body = body.M_next {
 		data := GetBodyUserData(body)
-		direction := true
+		direction := protocol.DirectionKindRight
 		if data.GetKind() == protocol.BodyKindHero {
 			direction = engine.Players[data.(PlayerUserData).HeroId].Direction
 		}

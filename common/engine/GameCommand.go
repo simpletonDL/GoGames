@@ -50,10 +50,10 @@ func (c PlayerInputCommand) Execute(engine *GameEngine) {
 		switch moveKind {
 		case protocol.MoveHeroKind.Right:
 			desiredVelX = min(playerVel.X+settings.PlayerHorizontalAccelerationPerFrame, settings.PlayerMaxHorizontalSpeed)
-			direction = PlayerDirection.Right
+			direction = protocol.DirectionKindRight
 		case protocol.MoveHeroKind.Left:
 			desiredVelX = max(playerVel.X-settings.PlayerHorizontalAccelerationPerFrame, -settings.PlayerMaxHorizontalSpeed)
-			direction = PlayerDirection.Left
+			direction = protocol.DirectionKindLeft
 		case protocol.MoveHeroKind.Up:
 			if playerInfo.JumpCount > 0 {
 				desiredVelY = settings.PlayerJumpSpeed
@@ -91,7 +91,7 @@ func (c PlayerInputCommand) Execute(engine *GameEngine) {
 		bulletRotation := box2d.MakeB2RotFromAngle(playerBody.GetAngle())
 		bulletVec := box2d.MakeB2Vec2(bulletRotation.C, bulletRotation.S)
 		bulletVec.OperatorScalarMulInplace(15.0)
-		if playerInfo.Direction == PlayerDirection.Left {
+		if playerInfo.Direction == protocol.DirectionKindLeft {
 			bulletVec.OperatorScalarMulInplace(-1.0)
 		}
 		bullet.SetLinearVelocity(bulletVec)
@@ -109,7 +109,7 @@ func (c CreatePlayerCommand) Execute(engine *GameEngine) {
 	body := AddHero(engine.World, 2, 15, 0.8, 1, 1, 0.3, c.PlayerId)
 	engine.Players[c.PlayerId] = &PlayerInfo{
 		Body:                  body,
-		Direction:             PlayerDirection.Right,
+		Direction:             protocol.DirectionKindRight,
 		MoveDownThrowPlatform: false,
 		JumpCount:             settings.PlayerMaxJumpCount,
 	}

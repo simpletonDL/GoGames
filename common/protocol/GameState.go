@@ -2,11 +2,18 @@ package protocol
 
 type BodyKind uint8
 
+type DirectionKind bool
+
 const (
 	BodyKindBox = BodyKind(iota)
 	BodyKindHero
 	BodyKindBullet
 	BodyKindPlatform
+)
+
+const (
+	DirectionKindRight = DirectionKind(true)
+	DirectionKindLeft  = DirectionKind(false)
 )
 
 type GameState struct {
@@ -25,5 +32,5 @@ type GameObject struct {
 	Angel         float64
 	BodyKind      BodyKind
 	Width, Height float64
-	Direction     bool
+	Direction     DirectionKind
 }

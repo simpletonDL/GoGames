@@ -40,7 +40,7 @@ func Render(image *ebiten.Image, state *protocol.GameState) {
 		}
 
 		objOptions := MakeImageOptions(objImage, obj.Width*scaleX, obj.Height*scaleY,
-			obj.XPos*scaleX, float64(image.Bounds().Dy())-obj.YPos*scaleY, -obj.Angel, obj.Direction == false)
+			obj.XPos*scaleX, float64(image.Bounds().Dy())-obj.YPos*scaleY, -obj.Angel, obj.Direction == protocol.DirectionKindLeft)
 		image.DrawImage(objImage, objOptions)
 	}
 }
