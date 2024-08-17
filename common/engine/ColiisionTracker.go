@@ -18,26 +18,26 @@ func NewCollisionTracker(engine *GameEngine) CollisionTracker {
 func (c CollisionTracker) BeginContact(contact box2d.B2ContactInterface) {
 	bodyA := contact.GetFixtureA().GetBody()
 	bodyB := contact.GetFixtureB().GetBody()
-	userDataA := bodyA.GetUserData().(BodyUserData)
-	userDataB := bodyB.GetUserData().(BodyUserData)
+	userDataA := GetBodyUserData(bodyA)
+	userDataB := GetBodyUserData(bodyB)
 
-	if userDataA.Kind == protocol.BodyKindHero && userDataB.Kind == protocol.BodyKindPlatform ||
-		userDataA.Kind == protocol.BodyKindPlatform && userDataB.Kind == protocol.BodyKindHero {
+	if userDataA.GetKind() == protocol.BodyKindHero && userDataB.GetKind() == protocol.BodyKindPlatform ||
+		userDataA.GetKind() == protocol.BodyKindPlatform && userDataB.GetKind() == protocol.BodyKindHero {
 		// Make sure that bodyA is a hero
-		if userDataB.Kind == protocol.BodyKindHero {
+		if userDataB.GetKind() == protocol.BodyKindHero {
 			bodyA, bodyB = bodyB, bodyA
 			userDataA, userDataB = userDataB, userDataA
 		}
-		c.processHeroWithPlatformBeginContact(contact, bodyA, userDataA, bodyB)
+		c.processHeroWithPlatformBeginContact(contact, bodyA, userDataA.(PlayerUserData), bodyB)
 	}
-	if userDataA.Kind == protocol.BodyKindHero && bodyB.M_type != box2d.B2BodyType.B2_kinematicBody ||
-		bodyA.M_type != box2d.B2BodyType.B2_kinematicBody && userDataB.Kind == protocol.BodyKindHero {
+	if userDataA.GetKind() == protocol.BodyKindHero && bodyB.M_type != box2d.B2BodyType.B2_kinematicBody ||
+		bodyA.M_type != box2d.B2BodyType.B2_kinematicBody && userDataB.GetKind() == protocol.BodyKindHero {
 		// Make sure that bodyA is a hero
-		if userDataB.Kind == protocol.BodyKindHero {
+		if userDataB.GetKind() == protocol.BodyKindHero {
 			bodyA, bodyB = bodyB, bodyA
 			userDataA, userDataB = userDataB, userDataA
 		}
-		c.processHeroWithStaticOrDynamicBodyBeginContact(contact, bodyA, userDataA, bodyB)
+		c.processHeroWithStaticOrDynamicBodyBeginContact(contact, bodyA, userDataA.(PlayerUserData), bodyB)
 	}
 }
 
@@ -46,25 +46,25 @@ func (c CollisionTracker) EndContact(contact box2d.B2ContactInterface) {}
 func (c CollisionTracker) PreSolve(contact box2d.B2ContactInterface, oldManifold box2d.B2Manifold) {
 	bodyA := contact.GetFixtureA().GetBody()
 	bodyB := contact.GetFixtureB().GetBody()
-	userDataA := bodyA.GetUserData().(BodyUserData)
-	userDataB := bodyB.GetUserData().(BodyUserData)
+	userDataA := GetBodyUserData(bodyA)
+	userDataB := GetBodyUserData(bodyB)
 
-	if userDataA.Kind == protocol.BodyKindBullet || userDataB.Kind == protocol.BodyKindBullet {
+	if userDataA.GetKind() == protocol.BodyKindBullet || userDataB.GetKind() == protocol.BodyKindBullet {
 		// Make sure that bodyA is a bullet
-		if userDataB.Kind == protocol.BodyKindBullet {
+		if userDataB.GetKind() == protocol.BodyKindBullet {
 			bodyA, bodyB = bodyB, bodyA
 			userDataA, userDataB = userDataB, userDataA
 		}
 		c.processBulletPreSolveContact(contact, bodyA, bodyB)
 	}
-	if userDataA.Kind == protocol.BodyKindHero && userDataB.Kind == protocol.BodyKindPlatform ||
-		userDataA.Kind == protocol.BodyKindPlatform && userDataB.Kind == protocol.BodyKindHero {
+	if userDataA.GetKind() == protocol.BodyKindHero && userDataB.GetKind() == protocol.BodyKindPlatform ||
+		userDataA.GetKind() == protocol.BodyKindPlatform && userDataB.GetKind() == protocol.BodyKindHero {
 		// Make sure that bodyA is a hero
-		if userDataB.Kind == protocol.BodyKindHero {
+		if userDataB.GetKind() == protocol.BodyKindHero {
 			bodyA, bodyB = bodyB, bodyA
 			userDataA, userDataB = userDataB, userDataA
 		}
-		c.processHeroWithPlatformPreSolveContact(contact, userDataA)
+		c.processHeroWithPlatformPreSolveContact(contact, userDataA.(PlayerUserData))
 	}
 }
 
@@ -72,8 +72,8 @@ func (c CollisionTracker) PostSolve(contact box2d.B2ContactInterface, impulse *b
 }
 
 func (c CollisionTracker) processBulletPreSolveContact(contact box2d.B2ContactInterface, bulletBody *box2d.B2Body, otherBody *box2d.B2Body) {
-	bulletUserData := bulletBody.GetUserData().(BodyUserData)
-	otherUserData := otherBody.GetUserData().(BodyUserData)
+	bulletUserData := GetBodyUserData(bulletBody).(BulletUserData)
+	otherUserData := GetBodyUserData(otherBody)
 	if otherBody == bulletUserData.Owner {
 		// bullets should not contact with their owners
 		contact.SetEnabled(false)
@@ -83,7 +83,7 @@ func (c CollisionTracker) processBulletPreSolveContact(contact box2d.B2ContactIn
 	fmt.Printf("Bullet(%f, %f) contact\n", bulletBody.GetPosition().X, bulletBody.GetPosition().Y)
 	contact.SetEnabled(false)
 	c.engine.ScheduleCommand(RemoveBodyCommand{body: bulletBody})
-	if otherUserData.Kind == protocol.BodyKindBullet {
+	if otherUserData.GetKind() == protocol.BodyKindBullet {
 		// Ignore contact with other bullets
 	} else {
 		var worldManifold box2d.B2WorldManifold
@@ -104,7 +104,9 @@ func (c CollisionTracker) processBulletPreSolveContact(contact box2d.B2ContactIn
 	}
 }
 
-func (c CollisionTracker) processHeroWithPlatformBeginContact(contact box2d.B2ContactInterface, heroBody *box2d.B2Body, heroUserData BodyUserData, platformBody *box2d.B2Body) {
+func (c CollisionTracker) processHeroWithPlatformBeginContact(
+	contact box2d.B2ContactInterface, heroBody *box2d.B2Body, heroUserData PlayerUserData, platformBody *box2d.B2Body,
+) {
 	// Don't allow player to move down through platform in case of contact begin
 	c.engine.Players[heroUserData.HeroId].MoveDownThrowPlatform = false
 
@@ -124,7 +126,7 @@ func (c CollisionTracker) processHeroWithPlatformBeginContact(contact box2d.B2Co
 	contact.SetEnabled(false)
 }
 
-func (c CollisionTracker) processHeroWithPlatformPreSolveContact(contact box2d.B2ContactInterface, heroUserData BodyUserData) {
+func (c CollisionTracker) processHeroWithPlatformPreSolveContact(contact box2d.B2ContactInterface, heroUserData PlayerUserData) {
 	playerInfo := c.engine.Players[heroUserData.HeroId]
 	if playerInfo.MoveDownThrowPlatform {
 		contact.SetEnabled(false)
@@ -132,7 +134,7 @@ func (c CollisionTracker) processHeroWithPlatformPreSolveContact(contact box2d.B
 	playerInfo.MoveDownThrowPlatform = false
 }
 
-func (c CollisionTracker) processHeroWithStaticOrDynamicBodyBeginContact(contact box2d.B2ContactInterface, heroBody *box2d.B2Body, heroUserData BodyUserData, otherBody *box2d.B2Body) {
+func (c CollisionTracker) processHeroWithStaticOrDynamicBodyBeginContact(contact box2d.B2ContactInterface, heroBody *box2d.B2Body, heroUserData PlayerUserData, otherBody *box2d.B2Body) {
 	otherBodyY := otherBody.GetPosition().Y
 
 	var woldManifold box2d.B2WorldManifold
