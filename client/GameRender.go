@@ -26,17 +26,17 @@ func Render(image *ebiten.Image, state *protocol.GameState) {
 
 	for _, obj := range state.Objects {
 		var objImage *ebiten.Image
-		switch obj.ImageKind {
-		case protocol.BodyKind.Box:
+		switch obj.BodyKind {
+		case protocol.BodyKindBox:
 			objImage = BoxImage
-		case protocol.BodyKind.Hero:
+		case protocol.BodyKindHero:
 			objImage = HeroImage
-		case protocol.BodyKind.Bullet:
+		case protocol.BodyKindBullet:
 			objImage = BulletImage
-		case protocol.BodyKind.Platform:
+		case protocol.BodyKindPlatform:
 			objImage = PlatformImage
 		default:
-			panic(fmt.Sprintf("Unknown object kind %d", obj.ImageKind))
+			panic(fmt.Sprintf("Unknown object kind %d", obj.BodyKind))
 		}
 
 		objOptions := MakeImageOptions(objImage, obj.Width*scaleX, obj.Height*scaleY,

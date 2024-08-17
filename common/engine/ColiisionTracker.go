@@ -21,19 +21,19 @@ func (c CollisionTracker) BeginContact(contact box2d.B2ContactInterface) {
 	userDataA := bodyA.GetUserData().(BodyUserData)
 	userDataB := bodyB.GetUserData().(BodyUserData)
 
-	if userDataA.Kind == protocol.BodyKind.Hero && userDataB.Kind == protocol.BodyKind.Platform ||
-		userDataA.Kind == protocol.BodyKind.Platform && userDataB.Kind == protocol.BodyKind.Hero {
+	if userDataA.Kind == protocol.BodyKindHero && userDataB.Kind == protocol.BodyKindPlatform ||
+		userDataA.Kind == protocol.BodyKindPlatform && userDataB.Kind == protocol.BodyKindHero {
 		// Make sure that bodyA is a hero
-		if userDataB.Kind == protocol.BodyKind.Hero {
+		if userDataB.Kind == protocol.BodyKindHero {
 			bodyA, bodyB = bodyB, bodyA
 			userDataA, userDataB = userDataB, userDataA
 		}
 		c.processHeroWithPlatformBeginContact(contact, bodyA, userDataA, bodyB)
 	}
-	if userDataA.Kind == protocol.BodyKind.Hero && bodyB.M_type != box2d.B2BodyType.B2_kinematicBody ||
-		bodyA.M_type != box2d.B2BodyType.B2_kinematicBody && userDataB.Kind == protocol.BodyKind.Hero {
+	if userDataA.Kind == protocol.BodyKindHero && bodyB.M_type != box2d.B2BodyType.B2_kinematicBody ||
+		bodyA.M_type != box2d.B2BodyType.B2_kinematicBody && userDataB.Kind == protocol.BodyKindHero {
 		// Make sure that bodyA is a hero
-		if userDataB.Kind == protocol.BodyKind.Hero {
+		if userDataB.Kind == protocol.BodyKindHero {
 			bodyA, bodyB = bodyB, bodyA
 			userDataA, userDataB = userDataB, userDataA
 		}
@@ -49,18 +49,18 @@ func (c CollisionTracker) PreSolve(contact box2d.B2ContactInterface, oldManifold
 	userDataA := bodyA.GetUserData().(BodyUserData)
 	userDataB := bodyB.GetUserData().(BodyUserData)
 
-	if userDataA.Kind == protocol.BodyKind.Bullet || userDataB.Kind == protocol.BodyKind.Bullet {
+	if userDataA.Kind == protocol.BodyKindBullet || userDataB.Kind == protocol.BodyKindBullet {
 		// Make sure that bodyA is a bullet
-		if userDataB.Kind == protocol.BodyKind.Bullet {
+		if userDataB.Kind == protocol.BodyKindBullet {
 			bodyA, bodyB = bodyB, bodyA
 			userDataA, userDataB = userDataB, userDataA
 		}
 		c.processBulletPreSolveContact(contact, bodyA, bodyB)
 	}
-	if userDataA.Kind == protocol.BodyKind.Hero && userDataB.Kind == protocol.BodyKind.Platform ||
-		userDataA.Kind == protocol.BodyKind.Platform && userDataB.Kind == protocol.BodyKind.Hero {
+	if userDataA.Kind == protocol.BodyKindHero && userDataB.Kind == protocol.BodyKindPlatform ||
+		userDataA.Kind == protocol.BodyKindPlatform && userDataB.Kind == protocol.BodyKindHero {
 		// Make sure that bodyA is a hero
-		if userDataB.Kind == protocol.BodyKind.Hero {
+		if userDataB.Kind == protocol.BodyKindHero {
 			bodyA, bodyB = bodyB, bodyA
 			userDataA, userDataB = userDataB, userDataA
 		}
@@ -83,7 +83,7 @@ func (c CollisionTracker) processBulletPreSolveContact(contact box2d.B2ContactIn
 	fmt.Printf("Bullet(%f, %f) contact\n", bulletBody.GetPosition().X, bulletBody.GetPosition().Y)
 	contact.SetEnabled(false)
 	c.engine.ScheduleCommand(RemoveBodyCommand{body: bulletBody})
-	if otherUserData.Kind == protocol.BodyKind.Bullet {
+	if otherUserData.Kind == protocol.BodyKindBullet {
 		// Ignore contact with other bullets
 	} else {
 		var worldManifold box2d.B2WorldManifold

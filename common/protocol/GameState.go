@@ -1,16 +1,13 @@
 package protocol
 
-var BodyKind = struct {
-	Box      uint8
-	Hero     uint8
-	Bullet   uint8
-	Platform uint8
-}{
-	Box:      0,
-	Hero:     1,
-	Bullet:   2,
-	Platform: 3,
-}
+type BodyKind uint8
+
+const (
+	BodyKindBox = BodyKind(iota)
+	BodyKindHero
+	BodyKindBullet
+	BodyKindPlatform
+)
 
 type GameState struct {
 	Objects []GameObject
@@ -26,7 +23,7 @@ type GameObject struct {
 	XPos          float64
 	YPos          float64
 	Angel         float64
-	ImageKind     uint8
+	BodyKind      BodyKind
 	Width, Height float64
 	Direction     bool
 }

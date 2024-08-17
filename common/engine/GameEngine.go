@@ -89,7 +89,7 @@ func GetGameState(engine *GameEngine) protocol.GameState {
 	for body := world.GetBodyList(); body != nil; body = body.M_next {
 		data := body.GetUserData().(BodyUserData)
 		direction := true
-		if data.Kind == protocol.BodyKind.Hero {
+		if data.Kind == protocol.BodyKindHero {
 			direction = engine.Players[data.HeroId].Direction
 		}
 
@@ -97,7 +97,7 @@ func GetGameState(engine *GameEngine) protocol.GameState {
 			XPos:      body.GetPosition().X,
 			YPos:      body.GetPosition().Y,
 			Angel:     body.GetAngle(),
-			ImageKind: data.Kind,
+			BodyKind:  data.Kind,
 			Width:     data.Width,
 			Height:    data.Height,
 			Direction: direction,
@@ -122,7 +122,7 @@ func (e *GameEngine) processOutOfScreenBodies() {
 		}
 		if bodyIsOutOfBound {
 			userData := body.GetUserData().(BodyUserData)
-			if userData.Kind == protocol.BodyKind.Hero {
+			if userData.Kind == protocol.BodyKindHero {
 				// respawn hero, TODO: decrement life count
 				newX := rand.Uint32() % settings.WorldWidth
 				newY := settings.WorldHeight
