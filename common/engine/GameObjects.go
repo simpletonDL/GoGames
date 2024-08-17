@@ -30,6 +30,7 @@ func AddPlatform(world *box2d.B2World, x float64, y float64, angel float64, widt
 func AddHero(world *box2d.B2World, x float64, y float64, width float64, height float64, density float64, friction float64, id PlayerId) *box2d.B2Body {
 	hero := addRectangle(world, box2d.B2BodyType.B2_dynamicBody, x, y, 0, width, height, density, friction)
 	hero.SetUserData(BodyUserData{Width: width, Height: height, Kind: protocol.BodyKind.Hero, HeroId: id})
+	hero.SetFixedRotation(true)
 	return hero
 }
 

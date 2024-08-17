@@ -94,7 +94,7 @@ func (c CollisionTracker) processBulletPreSolveContact(contact box2d.B2ContactIn
 			fmt.Printf("Body world center: (%f, %f)", otherBody.GetWorldCenter().X, otherBody.GetWorldCenter().Y)
 			bulletVelocity := bulletBody.GetLinearVelocity()
 			bulletVelocity.Normalize()
-			bulletVelocity.OperatorScalarMulInplace(7)
+			bulletVelocity.OperatorScalarMulInplace(14)
 			c.engine.ScheduleCommand(ApplyImpulseCommand{
 				body:    otherBody,
 				point:   collisionPoint,
