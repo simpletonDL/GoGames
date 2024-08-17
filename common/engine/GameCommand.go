@@ -84,17 +84,8 @@ func (c PlayerInputCommand) Execute(engine *GameEngine) {
 		}
 		playerBody.SetAngularVelocity(desiredSpeed)
 	case protocol.InputCommandKind.MakeShoot:
-		fmt.Printf("processInputCommands: Shoot\n")
-		playerBody := playerInfo.Body
-		playerPosition := playerBody.GetPosition()
-		bullet := AddBullet(engine.World, playerPosition.X, playerPosition.Y, 0, 0.2, 0.2, playerBody)
-		bulletRotation := box2d.MakeB2RotFromAngle(playerBody.GetAngle())
-		bulletVec := box2d.MakeB2Vec2(bulletRotation.C, bulletRotation.S)
-		bulletVec.OperatorScalarMulInplace(15.0)
-		if playerInfo.Direction == protocol.DirectionKindLeft {
-			bulletVec.OperatorScalarMulInplace(-1.0)
-		}
-		bullet.SetLinearVelocity(bulletVec)
+		weapon := playerInfo.Weapon
+		weapon.Shoot(engine, playerInfo)
 	}
 	engine.Players[c.PlayerId] = playerInfo
 }
@@ -112,6 +103,7 @@ func (c CreatePlayerCommand) Execute(engine *GameEngine) {
 		Direction:             protocol.DirectionKindRight,
 		MoveDownThrowPlatform: false,
 		JumpCount:             settings.PlayerMaxJumpCount,
+		Weapon:                NewSniperRifle(),
 	}
 	fmt.Printf("createPlayerCommand: id=%d\n", c.PlayerId)
 }

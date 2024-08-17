@@ -36,7 +36,8 @@ type PlayerUserData struct {
 
 type BulletUserData struct {
 	DefaultBodyUserData
-	Owner *box2d.B2Body
+	Owner       *box2d.B2Body
+	ImpactForce float64
 }
 
 func SetBodyUserData(body *box2d.B2Body, data BodyUserData) {
@@ -80,11 +81,15 @@ func AddHero(world *box2d.B2World, x float64, y float64, width float64, height f
 	return hero
 }
 
-func AddBullet(world *box2d.B2World, x float64, y float64, angel float64, width float64, height float64, owner *box2d.B2Body) *box2d.B2Body {
+func AddBullet(
+	world *box2d.B2World, x float64, y float64, angel float64, width float64, height float64,
+	owner *box2d.B2Body, impactForce float64,
+) *box2d.B2Body {
 	bullet := addRectangle(world, box2d.B2BodyType.B2_kinematicBody, x, y, 0, width, height, 1, 1)
 	SetBodyUserData(bullet, BulletUserData{
 		DefaultBodyUserData: DefaultBodyUserData{Width: width, Height: height, Kind: protocol.BodyKindBullet},
 		Owner:               owner,
+		ImpactForce:         impactForce,
 	})
 	bullet.SetBullet(true)
 	return bullet

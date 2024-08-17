@@ -38,6 +38,7 @@ func (e *GameEngine) Run(fps int, velocityIterations int, positionIterations int
 		}
 		e.World.Step(timestamp, velocityIterations, positionIterations)
 		e.processOutOfScreenBodies()
+		e.processWeaponsReload()
 		for _, listener := range e.Listeners {
 			listener(GetGameState(e))
 		}
@@ -55,6 +56,7 @@ type PlayerInfo struct {
 	Direction             protocol.DirectionKind
 	MoveDownThrowPlatform bool
 	JumpCount             int8
+	Weapon                Weapon
 }
 
 type GameEngineListener func(world protocol.GameState)
@@ -125,5 +127,11 @@ func (e *GameEngine) processOutOfScreenBodies() {
 				e.World.DestroyBody(body)
 			}
 		}
+	}
+}
+
+func (e *GameEngine) processWeaponsReload() {
+	for _, info := range e.Players {
+		info.Weapon.ProcessGameTick()
 	}
 }

@@ -63,7 +63,7 @@ func (g *Game) Update() error {
 			log.Printf("Failed to serialize message to JSON: %v\n", err)
 		}
 	}
-	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+	if ebiten.IsKeyPressed(ebiten.KeySpace) {
 		message := protocol.NewMakeShootCommand()
 		err := encoder.Encode(message)
 		if err != nil {
