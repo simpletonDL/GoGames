@@ -1,8 +1,8 @@
 package protocol
 
 type BodyKind uint8
-
 type DirectionKind bool
+type WeaponKind int
 
 const (
 	BodyKindBox = BodyKind(iota)
@@ -14,6 +14,11 @@ const (
 const (
 	DirectionKindRight = DirectionKind(true)
 	DirectionKindLeft  = DirectionKind(false)
+)
+
+const (
+	WeaponKindDefault     = WeaponKind(iota)
+	WeaponKindSniperRifle = WeaponKind(iota)
 )
 
 type GameState struct {
@@ -33,4 +38,6 @@ type GameObject struct {
 	BodyKind      BodyKind
 	Width, Height float64
 	Direction     DirectionKind
+	// Player specific
+	WeaponKind WeaponKind
 }

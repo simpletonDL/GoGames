@@ -17,7 +17,7 @@ var (
 	//go:embed assets/wooden-box.png
 	boxImageRaw []byte
 
-	//go:embed assets/artem_aleksyuk.png
+	//go:embed assets/hero.png
 	hero []byte
 
 	//go:embed assets/paintball.png
@@ -25,15 +25,26 @@ var (
 
 	//go:embed assets/platform.png
 	platform []byte
+
+	/* Weapons */
+	//go:embed assets/weapons/pistol.png
+	defaultWeapon []byte
+
+	//go:embed assets/weapons/sniper-rifle.png
+	sniperRifleWeapon []byte
 )
 
 var (
 	BackgroundImage *ebiten.Image
-	PlayerImage     *ebiten.Image
 	BulletImage     *ebiten.Image
 	PlatformImage   *ebiten.Image
 	BoxImage        *ebiten.Image
 	HeroImage       *ebiten.Image
+
+	/* Weapons */
+
+	DefaultWeaponImage     *ebiten.Image
+	SniperRifleWeaponImage *ebiten.Image
 )
 
 func LoadImage(bs []byte) *ebiten.Image {
@@ -50,4 +61,6 @@ func LoadImages() {
 	HeroImage = LoadImage(hero)
 	BulletImage = LoadImage(bullet)
 	PlatformImage = LoadImage(platform)
+	DefaultWeaponImage = LoadImage(defaultWeapon)
+	SniperRifleWeaponImage = LoadImage(sniperRifleWeapon)
 }

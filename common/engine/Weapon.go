@@ -11,9 +11,11 @@ import (
 type Weapon interface {
 	Shoot(e *GameEngine, playerInfo *PlayerInfo)
 	ProcessGameTick()
+	GetKind() protocol.WeaponKind
 }
 
 type DefaultWeapon struct {
+	kind             protocol.WeaponKind
 	availableBullets int64
 
 	/* maximum bullet count before reload */
@@ -31,6 +33,10 @@ type DefaultWeapon struct {
 	/* Time (in fps) is needed to shoot be available. Should be more than remainingTimeToReload */
 	remainingTimeToReload   int
 	remainingTimeToShootFps int
+}
+
+func (c *DefaultWeapon) GetKind() protocol.WeaponKind {
+	return c.kind
 }
 
 func (c *DefaultWeapon) decrementBullets() {
@@ -84,15 +90,13 @@ func (c *DefaultWeapon) ProcessGameTick() {
 	}
 }
 
-func NewDefaultWeapon(
-	availableBullets int64, magazineCapacity int64, bulletForce float64, bulletSpeed float64,
-	reloadTime time.Duration, betweenTwoShootsTime time.Duration,
-) *DefaultWeapon {
+func NewDefaultWeapon(kind protocol.WeaponKind, availableBullets int64, magazineCapacity int64, bulletForce float64, bulletSpeed float64, reloadTime time.Duration, betweenTwoShootsTime time.Duration) *DefaultWeapon {
 
 	reloadTimeFps := int(float64(reloadTime) / float64(time.Second) * settings.GameFPS)
 	println(reloadTimeFps)
 	betweenTwoShootsTimeFps := int(float64(betweenTwoShootsTime) / float64(time.Second) * settings.GameFPS)
 	return &DefaultWeapon{
+		kind:                       kind,
 		availableBullets:           availableBullets,
 		magazineCapacity:           magazineCapacity,
 		availableBulletsInMagazine: min(availableBullets, magazineCapacity),
@@ -108,9 +112,9 @@ func NewDefaultWeapon(
 /* Available weapons */
 
 func NewDefaultGun() Weapon {
-	return NewDefaultWeapon(9223372036854775807, 10, 10, 15, time.Second, 200*time.Millisecond)
+	return NewDefaultWeapon(protocol.WeaponKindDefault, 9223372036854775807, 10, 10, 15, time.Second, 200*time.Millisecond)
 }
 
 func NewSniperRifle() Weapon {
-	return NewDefaultWeapon(9223372036854775807, 1, 30, 30, time.Second, 0)
+	return NewDefaultWeapon(protocol.WeaponKindSniperRifle, 20, 1, 30, 30, time.Second, 0)
 }

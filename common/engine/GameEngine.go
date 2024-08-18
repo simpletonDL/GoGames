@@ -83,18 +83,22 @@ func GetGameState(engine *GameEngine) protocol.GameState {
 	for body := world.GetBodyList(); body != nil; body = body.M_next {
 		data := GetBodyUserData(body)
 		direction := protocol.DirectionKindRight
+		WeaponKind := protocol.WeaponKindDefault
 		if data.GetKind() == protocol.BodyKindHero {
-			direction = engine.Players[data.(PlayerUserData).HeroId].Direction
+			playerInfo := engine.Players[data.(PlayerUserData).HeroId]
+			direction = playerInfo.Direction
+			WeaponKind = playerInfo.Weapon.GetKind()
 		}
 
 		object := protocol.GameObject{
-			XPos:      body.GetPosition().X,
-			YPos:      body.GetPosition().Y,
-			Angel:     body.GetAngle(),
-			BodyKind:  data.GetKind(),
-			Width:     data.GetWidth(),
-			Height:    data.GetHeight(),
-			Direction: direction,
+			XPos:       body.GetPosition().X,
+			YPos:       body.GetPosition().Y,
+			Angel:      body.GetAngle(),
+			BodyKind:   data.GetKind(),
+			Width:      data.GetWidth(),
+			Height:     data.GetHeight(),
+			Direction:  direction,
+			WeaponKind: WeaponKind,
 		}
 		gameObjects = append(gameObjects, object)
 	}

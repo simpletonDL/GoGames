@@ -103,7 +103,7 @@ func (c CreatePlayerCommand) Execute(engine *GameEngine) {
 		Direction:             protocol.DirectionKindRight,
 		MoveDownThrowPlatform: false,
 		JumpCount:             settings.PlayerMaxJumpCount,
-		Weapon:                NewSniperRifle(),
+		Weapon:                NewDefaultGun(),
 	}
 	fmt.Printf("createPlayerCommand: id=%d\n", c.PlayerId)
 }
