@@ -1,7 +1,6 @@
 package engine
 
 import (
-	"fmt"
 	"github.com/simpletonDL/GoGames/common/protocol"
 	"github.com/simpletonDL/GoGames/common/settings"
 	"github.com/simpletonDL/box2d"
@@ -24,6 +23,7 @@ type DefaultWeapon struct {
 
 	bulletForce float64
 	bulletSpeed float64
+	recoilSpeed float64
 
 	/* Reload time (in fps) when magazine is empty */
 	reloadTimeFps int
@@ -52,9 +52,7 @@ func (c *DefaultWeapon) Shoot(engine *GameEngine, playerInfo *PlayerInfo) {
 	if !c.isAvailable() {
 		return
 	}
-	fmt.Printf("Before: %d\n", c.availableBulletsInMagazine)
 	c.decrementBullets()
-	fmt.Printf("After: %d\n", c.availableBulletsInMagazine)
 	if c.availableBulletsInMagazine == 0 {
 		println("Reload!!!")
 		println(c.reloadTimeFps)
@@ -79,6 +77,16 @@ func (c *DefaultWeapon) Shoot(engine *GameEngine, playerInfo *PlayerInfo) {
 		bulletVec.OperatorScalarMulInplace(-1.0)
 	}
 	bullet.SetLinearVelocity(bulletVec)
+
+	// Process recoilImpulse
+	recoilImpulse := bulletVec.Clone()
+	recoilImpulse.Normalize()
+	recoilImpulse.OperatorScalarMulInplace(-c.recoilSpeed * playerBody.GetMass())
+	engine.ScheduleCommand(ApplyImpulseCommand{
+		body:    playerBody,
+		point:   playerPosition,
+		impulse: recoilImpulse,
+	})
 }
 
 func (c *DefaultWeapon) ProcessGameTick() {
@@ -90,7 +98,7 @@ func (c *DefaultWeapon) ProcessGameTick() {
 	}
 }
 
-func NewDefaultWeapon(kind protocol.WeaponKind, availableBullets int64, magazineCapacity int64, bulletForce float64, bulletSpeed float64, reloadTime time.Duration, betweenTwoShootsTime time.Duration) *DefaultWeapon {
+func NewDefaultWeapon(kind protocol.WeaponKind, availableBullets int64, magazineCapacity int64, bulletForce float64, bulletSpeed float64, recoilSpeed float64, reloadTime time.Duration, betweenTwoShootsTime time.Duration) *DefaultWeapon {
 
 	reloadTimeFps := int(float64(reloadTime) / float64(time.Second) * settings.GameFPS)
 	println(reloadTimeFps)
@@ -102,6 +110,7 @@ func NewDefaultWeapon(kind protocol.WeaponKind, availableBullets int64, magazine
 		availableBulletsInMagazine: min(availableBullets, magazineCapacity),
 		bulletForce:                bulletForce,
 		bulletSpeed:                bulletSpeed,
+		recoilSpeed:                recoilSpeed,
 		reloadTimeFps:              reloadTimeFps,
 		betweenTwoShootsTimeFps:    betweenTwoShootsTimeFps,
 		remainingTimeToReload:      0,
@@ -112,9 +121,9 @@ func NewDefaultWeapon(kind protocol.WeaponKind, availableBullets int64, magazine
 /* Available weapons */
 
 func NewDefaultGun() Weapon {
-	return NewDefaultWeapon(protocol.WeaponKindDefault, 9223372036854775807, 10, 10, 15, time.Second, 200*time.Millisecond)
+	return NewDefaultWeapon(protocol.WeaponKindDefault, 9223372036854775807, 10, 10, 15, 3, time.Second, 200*time.Millisecond)
 }
 
 func NewSniperRifle() Weapon {
-	return NewDefaultWeapon(protocol.WeaponKindSniperRifle, 20, 1, 30, 30, time.Second, 0)
+	return NewDefaultWeapon(protocol.WeaponKindSniperRifle, 20, 1, 30, 30, 20, time.Second, 0)
 }
