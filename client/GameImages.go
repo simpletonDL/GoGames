@@ -32,6 +32,9 @@ var (
 
 	//go:embed assets/weapons/sniper-rifle.png
 	sniperRifleWeapon []byte
+
+	//go:embed assets/weapons/machine-gun.png
+	machineGunWeapon []byte
 )
 
 var (
@@ -45,6 +48,7 @@ var (
 
 	DefaultWeaponImage     *ebiten.Image
 	SniperRifleWeaponImage *ebiten.Image
+	MachineGunWeaponImage  *ebiten.Image
 )
 
 func LoadImage(bs []byte) *ebiten.Image {
@@ -63,4 +67,5 @@ func LoadImages() {
 	PlatformImage = LoadImage(platform)
 	DefaultWeaponImage = LoadImage(defaultWeapon)
 	SniperRifleWeaponImage = LoadImage(sniperRifleWeapon)
+	MachineGunWeaponImage = LoadImage(machineGunWeapon)
 }

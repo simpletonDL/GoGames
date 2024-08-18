@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"fmt"
 	"github.com/simpletonDL/GoGames/common/protocol"
 	"github.com/simpletonDL/GoGames/common/settings"
 	"github.com/simpletonDL/box2d"
@@ -120,10 +121,29 @@ func NewDefaultWeapon(kind protocol.WeaponKind, availableBullets int64, magazine
 
 /* Available weapons */
 
+const inf = 9223372036854775807
+
 func NewDefaultGun() Weapon {
-	return NewDefaultWeapon(protocol.WeaponKindDefault, 9223372036854775807, 10, 10, 15, 3, time.Second, 200*time.Millisecond)
+	return NewDefaultWeapon(protocol.WeaponKindDefault, inf, 10, 10, 15, 3, time.Second, 200*time.Millisecond)
 }
 
 func NewSniperRifle() Weapon {
-	return NewDefaultWeapon(protocol.WeaponKindSniperRifle, 20, 1, 30, 30, 20, time.Second, 0)
+	return NewDefaultWeapon(protocol.WeaponKindSniperRifle, inf, 1, 35, 30, 20, time.Second, 0)
+}
+
+func NewMachineGun() Weapon {
+	return NewDefaultWeapon(protocol.WeaponKindMachineGun, inf, 100, 3.5, 20, 1.3, 2*time.Second, 60*time.Millisecond)
+}
+
+func CreateWeapon(kind protocol.WeaponKind) Weapon {
+	switch kind {
+	case protocol.WeaponKindDefault:
+		return NewDefaultGun()
+	case protocol.WeaponKindSniperRifle:
+		return NewSniperRifle()
+	case protocol.WeaponKindMachineGun:
+		return NewMachineGun()
+	default:
+		panic(fmt.Sprintf("Unknown weapon kind: %d ", kind))
+	}
 }

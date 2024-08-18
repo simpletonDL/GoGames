@@ -86,6 +86,10 @@ func (c PlayerInputCommand) Execute(engine *GameEngine) {
 	case protocol.InputCommandKind.MakeShoot:
 		weapon := playerInfo.Weapon
 		weapon.Shoot(engine, playerInfo)
+	case protocol.InputCommandKind.ChangeWeapon:
+		weaponKind := protocol.WeaponKind(c.Cmd.IntArgs["kind"])
+		weapon := CreateWeapon(weaponKind)
+		playerInfo.Weapon = weapon
 	}
 	engine.Players[c.PlayerId] = playerInfo
 }

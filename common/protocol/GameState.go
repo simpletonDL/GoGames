@@ -17,8 +17,9 @@ const (
 )
 
 const (
-	WeaponKindDefault     = WeaponKind(iota)
-	WeaponKindSniperRifle = WeaponKind(iota)
+	WeaponKindDefault = WeaponKind(iota)
+	WeaponKindSniperRifle
+	WeaponKindMachineGun
 )
 
 type GameState struct {
