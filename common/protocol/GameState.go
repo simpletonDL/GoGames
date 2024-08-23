@@ -21,6 +21,7 @@ const (
 	WeaponKindDefault = WeaponKind(iota)
 	WeaponKindSniperRifle
 	WeaponKindMachineGun
+	WeaponKindCarbine
 
 	WeaponKindCount
 )

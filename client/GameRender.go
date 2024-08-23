@@ -30,6 +30,8 @@ func getWeaponImage(kind protocol.WeaponKind) *ebiten.Image {
 		return SniperRifleWeaponImage
 	case protocol.WeaponKindMachineGun:
 		return MachineGunWeaponImage
+	case protocol.WeaponKindCarbine:
+		return CarbineWeaponImage
 	default:
 		panic(fmt.Sprintf("Unknown weapon kind: %d", kind))
 	}

@@ -105,6 +105,13 @@ func (g *Game) Update() error {
 			log.Printf("Failed to serialize message to JSON: %v\n", err)
 		}
 	}
+	if ebiten.IsKeyPressed(ebiten.KeyDigit4) {
+		message := protocol.NewChangeWeaponCommand(protocol.WeaponKindCarbine)
+		err := encoder.Encode(message)
+		if err != nil {
+			log.Printf("Failed to serialize message to JSON: %v\n", err)
+		}
+	}
 	return nil
 }
 

@@ -150,7 +150,11 @@ func NewSniperRifle() Weapon {
 }
 
 func NewMachineGun() Weapon {
-	return NewDefaultWeapon(protocol.WeaponKindMachineGun, 140, 70, 3.5, 20, 1.3, 2*time.Second, 60*time.Millisecond)
+	return NewDefaultWeapon(protocol.WeaponKindMachineGun, 140, 70, 3.8, 20, 1.0, 2*time.Second, 60*time.Millisecond)
+}
+
+func NewCarbine() Weapon {
+	return NewDefaultWeapon(protocol.WeaponKindCarbine, 48, 12, 12, 24, 1.0, 1*time.Second, 100*time.Millisecond)
 }
 
 func CreateWeapon(kind protocol.WeaponKind) Weapon {
@@ -161,6 +165,8 @@ func CreateWeapon(kind protocol.WeaponKind) Weapon {
 		return NewSniperRifle()
 	case protocol.WeaponKindMachineGun:
 		return NewMachineGun()
+	case protocol.WeaponKindCarbine:
+		return NewCarbine()
 	default:
 		panic(fmt.Sprintf("Unknown weapon kind: %d ", kind))
 	}
