@@ -11,7 +11,7 @@ import (
 )
 
 func init() {
-	client.LoadImages()
+	client.LoadImagesAndFonts()
 }
 
 func main() {

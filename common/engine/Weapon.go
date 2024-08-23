@@ -11,7 +11,15 @@ import (
 type Weapon interface {
 	Shoot(e *GameEngine, playerInfo *PlayerInfo)
 	ProcessGameTick()
-	GetKind() protocol.WeaponKind
+	GetInfo() WeaponInfo
+}
+
+type WeaponInfo struct {
+	WeaponKind                       protocol.WeaponKind
+	WeaponMagazineCapacity           int
+	WeaponAvailableBulletsInMagazine int
+	WeaponAvailableBullets           int
+	WeaponIsReady                    bool
 }
 
 type DefaultWeapon struct {
@@ -34,6 +42,16 @@ type DefaultWeapon struct {
 	/* Time (in fps) is needed to shoot be available. Should be more than remainingTimeToReload */
 	remainingTimeToReload   int
 	remainingTimeToShootFps int
+}
+
+func (c *DefaultWeapon) GetInfo() WeaponInfo {
+	return WeaponInfo{
+		WeaponKind:                       c.kind,
+		WeaponMagazineCapacity:           int(c.magazineCapacity),
+		WeaponAvailableBulletsInMagazine: int(c.availableBulletsInMagazine),
+		WeaponAvailableBullets:           int(c.availableBullets),
+		WeaponIsReady:                    c.remainingTimeToReload == 0,
+	}
 }
 
 func (c *DefaultWeapon) GetKind() protocol.WeaponKind {
@@ -128,11 +146,11 @@ func NewDefaultGun() Weapon {
 }
 
 func NewSniperRifle() Weapon {
-	return NewDefaultWeapon(protocol.WeaponKindSniperRifle, inf, 1, 35, 30, 20, time.Second, 0)
+	return NewDefaultWeapon(protocol.WeaponKindSniperRifle, 8, 1, 35, 30, 20, time.Second, 0)
 }
 
 func NewMachineGun() Weapon {
-	return NewDefaultWeapon(protocol.WeaponKindMachineGun, inf, 100, 3.5, 20, 1.3, 2*time.Second, 60*time.Millisecond)
+	return NewDefaultWeapon(protocol.WeaponKindMachineGun, 140, 70, 3.5, 20, 1.3, 2*time.Second, 60*time.Millisecond)
 }
 
 func CreateWeapon(kind protocol.WeaponKind) Weapon {

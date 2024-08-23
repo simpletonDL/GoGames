@@ -3,8 +3,10 @@ package client
 import (
 	"fmt"
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/text/v2"
 	"github.com/simpletonDL/GoGames/common/protocol"
 	"github.com/simpletonDL/GoGames/common/settings"
+	"github.com/simpletonDL/GoGames/common/utils"
 )
 
 func MakeImageOptions(image *ebiten.Image, width float64, height float64, xPos float64, yPos float64, angel float64, inverseX bool) *ebiten.DrawImageOptions {
@@ -81,5 +83,22 @@ func Render(image *ebiten.Image, state *protocol.GameState) {
 			weaponOptions := MakeImageOptions(weaponImage, weaponWidthX, height, xPos+weaponAdjustmentX, yPos, angel, inverseX)
 			image.DrawImage(weaponImage, weaponOptions)
 		}
+	}
+
+	// Add text info about hero: lifes, weapon bullets, e.t.c.
+	players := utils.Filter(state.Objects, func(object protocol.GameObject) bool {
+		return object.BodyKind == protocol.BodyKindHero
+	})
+	for i, player := range players {
+		playerTextInfo := fmt.Sprintf("L: 7, C: %d/%d (%d)",
+			player.WeaponAvailableBulletsInMagazine,
+			player.WeaponMagazineCapacity,
+			player.WeaponAvailableBullets,
+		)
+		// TODO: place text in respect of team (after introducing teams)
+		padding := i * 25
+		opts := text.DrawOptions{}
+		opts.GeoM.Translate(0, float64(padding))
+		text.Draw(image, playerTextInfo, &text.GoTextFace{Source: MainFont, Size: 15}, &opts)
 	}
 }

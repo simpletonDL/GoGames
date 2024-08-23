@@ -91,24 +91,27 @@ func GetGameState(engine *GameEngine) protocol.GameState {
 	gameObjects := make([]protocol.GameObject, world.GetBodyCount())
 	for body := world.GetBodyList(); body != nil; body = body.M_next {
 		data := GetBodyUserData(body)
-		direction := protocol.DirectionKindRight
-		WeaponKind := protocol.WeaponKindDefault
-		if data.GetKind() == protocol.BodyKindHero {
-			playerInfo := engine.Players[data.(PlayerUserData).HeroId]
-			direction = playerInfo.Direction
-			WeaponKind = playerInfo.Weapon.GetKind()
-		}
 
 		object := protocol.GameObject{
-			XPos:       body.GetPosition().X,
-			YPos:       body.GetPosition().Y,
-			Angel:      body.GetAngle(),
-			BodyKind:   data.GetKind(),
-			Width:      data.GetWidth(),
-			Height:     data.GetHeight(),
-			Direction:  direction,
-			WeaponKind: WeaponKind,
+			XPos:     body.GetPosition().X,
+			YPos:     body.GetPosition().Y,
+			Angel:    body.GetAngle(),
+			BodyKind: data.GetKind(),
+			Width:    data.GetWidth(),
+			Height:   data.GetHeight(),
 		}
+		if data.GetKind() == protocol.BodyKindHero {
+			playerInfo := engine.Players[data.(PlayerUserData).HeroId]
+			weaponInfo := playerInfo.Weapon.GetInfo()
+
+			object.Direction = playerInfo.Direction
+			object.WeaponKind = weaponInfo.WeaponKind
+			object.WeaponAvailableBullets = weaponInfo.WeaponAvailableBullets
+			object.WeaponAvailableBulletsInMagazine = weaponInfo.WeaponAvailableBulletsInMagazine
+			object.WeaponMagazineCapacity = weaponInfo.WeaponMagazineCapacity
+			object.WeaponIsReady = weaponInfo.WeaponIsReady
+		}
+
 		gameObjects = append(gameObjects, object)
 	}
 	return protocol.GameState{

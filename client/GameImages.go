@@ -5,6 +5,8 @@ import (
 	_ "embed"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/examples/resources/fonts"
+	"github.com/hajimehoshi/ebiten/v2/text/v2"
 	_ "image/jpeg"
 	_ "image/png"
 	"log"
@@ -55,6 +57,10 @@ var (
 	MachineGunWeaponImage  *ebiten.Image
 )
 
+var (
+	MainFont *text.GoTextFaceSource
+)
+
 func LoadImage(bs []byte) *ebiten.Image {
 	image, _, err := ebitenutil.NewImageFromReader(bytes.NewReader(bs))
 	if err != nil {
@@ -63,7 +69,7 @@ func LoadImage(bs []byte) *ebiten.Image {
 	return image
 }
 
-func LoadImages() {
+func loadImages() {
 	BackgroundImage = LoadImage(backgroundImageRaw)
 	BoxImage = LoadImage(boxImageRaw)
 	HeroImage = LoadImage(hero)
@@ -73,4 +79,17 @@ func LoadImages() {
 	SniperRifleWeaponImage = LoadImage(sniperRifleWeapon)
 	MachineGunWeaponImage = LoadImage(machineGunWeapon)
 	WeaponBoxImage = LoadImage(weaponBoxImage)
+}
+
+func loadFont() {
+	s, err := text.NewGoTextFaceSource(bytes.NewReader(fonts.PressStart2P_ttf))
+	if err != nil {
+		log.Fatal(err)
+	}
+	MainFont = s
+}
+
+func LoadImagesAndFonts() {
+	loadImages()
+	loadFont()
 }
