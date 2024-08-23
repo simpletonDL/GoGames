@@ -51,6 +51,8 @@ func Render(image *ebiten.Image, state *protocol.GameState) {
 			objImage = BulletImage
 		case protocol.BodyKindPlatform:
 			objImage = PlatformImage
+		case protocol.BodyKindWeaponBox:
+			objImage = WeaponBoxImage
 		default:
 			panic(fmt.Sprintf("Unknown object kind %d", obj.BodyKind))
 		}

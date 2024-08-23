@@ -13,6 +13,7 @@ type GameEngine struct {
 	World     *box2d.B2World
 	Players   map[PlayerId]*PlayerInfo
 	Listeners []GameEngineListener
+	Events    []GameEvent
 }
 
 func NewGameEngine(inputCapacity int) *GameEngine {
@@ -21,6 +22,9 @@ func NewGameEngine(inputCapacity int) *GameEngine {
 		Input:     make(chan GameCommand, inputCapacity),
 		Players:   map[PlayerId]*PlayerInfo{},
 		Listeners: []GameEngineListener{},
+		Events: []GameEvent{
+			NewWeaponBoxCreationEvent(time.Second*10, 2),
+		},
 	}
 	// Add collision logic
 	engine.World.SetContactListener(NewCollisionTracker(engine))
@@ -28,6 +32,11 @@ func NewGameEngine(inputCapacity int) *GameEngine {
 }
 
 func (e *GameEngine) Run(fps int, velocityIterations int, positionIterations int) {
+	// Run all events async
+	for _, event := range e.Events {
+		e.RunEventAsync(event)
+	}
+
 	ticker := time.NewTicker(time.Second / time.Duration(fps))
 	timestamp := 1.0 / float64(fps)
 	for {

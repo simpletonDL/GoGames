@@ -64,6 +64,12 @@ func AddBox(world *box2d.B2World, x float64, y float64, angel float64, width flo
 	return body
 }
 
+func AddWeaponBox(world *box2d.B2World, x float64, y float64, angel float64, width float64, height float64, density float64, friction float64) *box2d.B2Body {
+	body := addRectangle(world, box2d.B2BodyType.B2_dynamicBody, x, y, angel, width, height, density, friction)
+	SetBodyUserData(body, DefaultBodyUserData{Width: width, Height: height, Kind: protocol.BodyKindWeaponBox})
+	return body
+}
+
 func AddPlatform(world *box2d.B2World, x float64, y float64, angel float64, width float64, height float64, density float64, friction float64) *box2d.B2Body {
 	body := addRectangle(world, box2d.B2BodyType.B2_staticBody, x, y, angel, width, height, density, friction)
 	SetBodyUserData(body, DefaultBodyUserData{Width: width, Height: height, Kind: protocol.BodyKindPlatform})

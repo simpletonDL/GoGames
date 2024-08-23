@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/simpletonDL/GoGames/common/protocol"
 	"github.com/simpletonDL/GoGames/common/settings"
+	"github.com/simpletonDL/GoGames/common/utils"
 	"github.com/simpletonDL/box2d"
 )
 
@@ -38,6 +39,16 @@ func (c CollisionTracker) BeginContact(contact box2d.B2ContactInterface) {
 			userDataA, userDataB = userDataB, userDataA
 		}
 		c.processHeroWithStaticOrDynamicBodyBeginContact(contact, bodyA, userDataA.(PlayerUserData), bodyB)
+	}
+
+	if userDataA.GetKind() == protocol.BodyKindHero && userDataB.GetKind() == protocol.BodyKindWeaponBox ||
+		userDataA.GetKind() == protocol.BodyKindWeaponBox && userDataB.GetKind() == protocol.BodyKindHero {
+		// Make sure that bodyA is a hero
+		if userDataB.GetKind() == protocol.BodyKindHero {
+			bodyA, bodyB = bodyB, bodyA
+			userDataA, userDataB = userDataB, userDataA
+		}
+		c.processHeroWithWeaponBoxContact(contact, userDataA.(PlayerUserData), bodyB)
 	}
 }
 
@@ -149,4 +160,15 @@ func (c CollisionTracker) processHeroWithStaticOrDynamicBodyBeginContact(contact
 	// All contact points are over platform/box/e.t.c.
 	playerInfo := c.engine.Players[heroUserData.HeroId]
 	playerInfo.JumpCount = settings.PlayerMaxJumpCount
+}
+
+func (c CollisionTracker) processHeroWithWeaponBoxContact(contact box2d.B2ContactInterface, heroUserData PlayerUserData, weaponBoxBody *box2d.B2Body) {
+	// Set new random weapon
+	playerInfo := c.engine.Players[heroUserData.HeroId]
+	c.engine.ScheduleCommand(NewCustomCommand(func(engine *GameEngine) {
+		kind := utils.RandInRange(1, int(protocol.WeaponKindCount))
+		playerInfo.Weapon = CreateWeapon(protocol.WeaponKind(kind))
+	}))
+	contact.SetEnabled(false)
+	c.engine.ScheduleCommand(RemoveBodyCommand{body: weaponBoxBody})
 }

@@ -17,6 +17,9 @@ var (
 	//go:embed assets/wooden-box.png
 	boxImageRaw []byte
 
+	//go:embed assets/weapon-box.png
+	weaponBoxImage []byte
+
 	//go:embed assets/hero.png
 	hero []byte
 
@@ -43,6 +46,7 @@ var (
 	PlatformImage   *ebiten.Image
 	BoxImage        *ebiten.Image
 	HeroImage       *ebiten.Image
+	WeaponBoxImage  *ebiten.Image
 
 	/* Weapons */
 
@@ -68,4 +72,5 @@ func LoadImages() {
 	DefaultWeaponImage = LoadImage(defaultWeapon)
 	SniperRifleWeaponImage = LoadImage(sniperRifleWeapon)
 	MachineGunWeaponImage = LoadImage(machineGunWeapon)
+	WeaponBoxImage = LoadImage(weaponBoxImage)
 }

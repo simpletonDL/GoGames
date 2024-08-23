@@ -9,6 +9,7 @@ const (
 	BodyKindHero
 	BodyKindBullet
 	BodyKindPlatform
+	BodyKindWeaponBox
 )
 
 const (
@@ -20,6 +21,8 @@ const (
 	WeaponKindDefault = WeaponKind(iota)
 	WeaponKindSniperRifle
 	WeaponKindMachineGun
+
+	WeaponKindCount
 )
 
 type GameState struct {
