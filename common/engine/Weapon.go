@@ -150,11 +150,11 @@ func NewSniperRifle() Weapon {
 }
 
 func NewMachineGun() Weapon {
-	return NewDefaultWeapon(protocol.WeaponKindMachineGun, 140, 70, 3.8, 20, 1.0, 2*time.Second, 60*time.Millisecond)
+	return NewDefaultWeapon(protocol.WeaponKindMachineGun, 140, 70, 5, 20, 0.9, 2*time.Second, 60*time.Millisecond)
 }
 
 func NewCarbine() Weapon {
-	return NewDefaultWeapon(protocol.WeaponKindCarbine, 48, 12, 12, 24, 1.0, 1*time.Second, 100*time.Millisecond)
+	return NewDefaultWeapon(protocol.WeaponKindCarbine, 52, 13, 11, 24, 1.0, 1*time.Second, 100*time.Millisecond)
 }
 
 func CreateWeapon(kind protocol.WeaponKind) Weapon {
