@@ -24,6 +24,7 @@ func NewGameEngine(inputCapacity int) *GameEngine {
 		Listeners: []GameEngineListener{},
 		Events: []GameEvent{
 			NewWeaponBoxCreationEvent(time.Second*10, 2),
+			NewBoxCreationEvent(time.Second*10, 2),
 		},
 	}
 	// Add collision logic

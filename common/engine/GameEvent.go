@@ -2,7 +2,6 @@ package engine
 
 import (
 	"github.com/simpletonDL/GoGames/common/settings"
-	"github.com/simpletonDL/box2d"
 	"math/rand"
 	"time"
 )
@@ -12,26 +11,43 @@ type GameEvent interface {
 	ProcessEvent(engine *GameEngine)
 }
 
-type WeaponBoxCreationEvent struct {
-	frequency         time.Duration
-	boxesCountPerTime int
-	currentBoxes      *box2d.B2Body
+type ObjectCreationEvent struct {
+	frequency          time.Duration
+	objectCountPerTime int
+	createObjectFun    func(engine *GameEngine)
 }
 
-func (w *WeaponBoxCreationEvent) GetFrequency(engine *GameEngine) time.Duration {
+type WeaponBoxCreationEvent struct {
+	ObjectCreationEvent
+}
+
+func (w *ObjectCreationEvent) GetFrequency(engine *GameEngine) time.Duration {
 	return w.frequency
 }
 
-func (w *WeaponBoxCreationEvent) ProcessEvent(engine *GameEngine) {
-	x := rand.Uint32() % settings.WorldWidth
-	AddWeaponBox(engine.World, float64(x), settings.WorldHeight, rand.Float64(), 1, 1, 1, 0.4)
+func (w *ObjectCreationEvent) ProcessEvent(engine *GameEngine) {
+	w.createObjectFun(engine)
 }
 
-func NewWeaponBoxCreationEvent(frequency time.Duration, boxesCountPerTime int) *WeaponBoxCreationEvent {
-	return &WeaponBoxCreationEvent{
-		frequency:         frequency,
-		boxesCountPerTime: boxesCountPerTime,
-		currentBoxes:      nil,
+func NewWeaponBoxCreationEvent(frequency time.Duration, boxesCountPerTime int) *ObjectCreationEvent {
+	return &ObjectCreationEvent{
+		frequency:          frequency,
+		objectCountPerTime: boxesCountPerTime,
+		createObjectFun: func(engine *GameEngine) {
+			x := rand.Uint32() % settings.WorldWidth
+			AddWeaponBox(engine.World, float64(x), settings.WorldHeight, rand.Float64(), 1, 1, 1, 0.4)
+		},
+	}
+}
+
+func NewBoxCreationEvent(frequency time.Duration, boxesCountPerTime int) *ObjectCreationEvent {
+	return &ObjectCreationEvent{
+		frequency:          frequency,
+		objectCountPerTime: boxesCountPerTime,
+		createObjectFun: func(engine *GameEngine) {
+			x := rand.Uint32() % settings.WorldWidth
+			AddBox(engine.World, float64(x), settings.WorldHeight, rand.Float64(), 1, 1, 0.5, 0.3)
+		},
 	}
 }
 

@@ -6,8 +6,6 @@ import (
 	"github.com/simpletonDL/GoGames/common/engine"
 	"github.com/simpletonDL/GoGames/common/protocol"
 	"github.com/simpletonDL/GoGames/common/settings"
-	"math/rand"
-	"time"
 )
 
 /* Game step processing */
@@ -37,17 +35,5 @@ func NewGameProcessor() *GameProcessor {
 }
 
 func (p *GameProcessor) Run() {
-	go AddRandomBoxEvent(p.GameEngine)
 	p.GameEngine.Run(settings.GameFPS, settings.VelocityIterations, settings.PositionIterations)
-}
-
-func AddRandomBoxEvent(e *engine.GameEngine) {
-	ticker := time.NewTicker(time.Second * 10)
-	for {
-		<-ticker.C
-		e.ScheduleCommand(engine.NewCustomCommand(func(e *engine.GameEngine) {
-			x := rand.Uint32() % settings.WorldWidth
-			engine.AddBox(e.World, float64(x), settings.WorldHeight, 2, 1, 1, 0.5, 0.3)
-		}))
-	}
 }
