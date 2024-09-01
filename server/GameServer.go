@@ -29,14 +29,13 @@ func Run(port string) {
 			continue
 		}
 
-		processor.Clients = append(processor.Clients, client)
+		processor.ConnectClient(client)
 		processor.GameEngine.ScheduleCommand(engine.CreatePlayerCommand{
 			Nickname: initCmd.Nickname,
 			PlayerId: engine.PlayerId(client.Id),
 			PosX:     2,
 			PosY:     15,
 		})
-		go HandleClientInput(client, processor)
 		currentClientId++
 	}
 }

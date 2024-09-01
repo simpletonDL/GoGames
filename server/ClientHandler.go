@@ -31,6 +31,11 @@ func Receive[T any](client Client) (result T, err error) {
 func HandleClientInput(client Client, processor *GameProcessor) {
 	defer client.conn.Close()
 	for {
+		select {
+		case <-processor.Ctx.Done():
+			return
+		default:
+		}
 		cmd, err := Receive[protocol.ClientInputCommand](client)
 		if err != nil {
 			if err == io.EOF {

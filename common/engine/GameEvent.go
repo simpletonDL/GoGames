@@ -51,15 +51,18 @@ func NewBoxCreationEvent(frequency time.Duration, boxesCountPerTime int) *Object
 	}
 }
 
-func (e *GameEngine) RunEventAsync(event GameEvent) {
-	go func() {
-		ticker := time.NewTicker(event.GetFrequency(e))
-		for {
-			<-ticker.C
-			e.ScheduleCommand(NewCustomCommand(func(e *GameEngine) {
-				event.ProcessEvent(e)
-			}))
-			ticker.Reset(event.GetFrequency(e))
+func (e *GameEngine) RunEvent(event GameEvent) {
+	ticker := time.NewTicker(event.GetFrequency(e))
+	for {
+		select {
+		case <-e.Ctx.Done():
+			return
+		default:
 		}
-	}()
+		<-ticker.C
+		e.ScheduleCommand(NewCustomCommand(func(e *GameEngine) {
+			event.ProcessEvent(e)
+		}))
+		ticker.Reset(event.GetFrequency(e))
+	}
 }

@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"context"
 	"github.com/simpletonDL/GoGames/common/protocol"
 	"github.com/simpletonDL/GoGames/common/settings"
 	"github.com/simpletonDL/box2d"
@@ -9,6 +10,7 @@ import (
 )
 
 type GameEngine struct {
+	Ctx       context.Context
 	Input     chan GameCommand
 	World     *box2d.B2World
 	Players   map[PlayerId]*PlayerInfo
@@ -16,8 +18,9 @@ type GameEngine struct {
 	Events    []GameEvent
 }
 
-func NewGameEngine(inputCapacity int) *GameEngine {
+func NewGameEngine(ctx context.Context, inputCapacity int) *GameEngine {
 	engine := &GameEngine{
+		Ctx:       ctx,
 		World:     createInitialWorld(),
 		Input:     make(chan GameCommand, inputCapacity),
 		Players:   map[PlayerId]*PlayerInfo{},
@@ -35,13 +38,18 @@ func NewGameEngine(inputCapacity int) *GameEngine {
 func (e *GameEngine) Run(fps int, velocityIterations int, positionIterations int) {
 	// Run all events async
 	for _, event := range e.Events {
-		e.RunEventAsync(event)
+		go e.RunEvent(event)
 	}
 
 	ticker := time.NewTicker(time.Second / time.Duration(fps))
 	timestamp := 1.0 / float64(fps)
 	for {
 		<-ticker.C
+		select {
+		case <-e.Ctx.Done():
+			return
+		default:
+		}
 		commands := e.collectAllGameCommandsNonBlocking()
 		for _, command := range commands {
 			command.Execute(e)
