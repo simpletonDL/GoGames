@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/simpletonDL/GoGames/common/engine"
 	"github.com/simpletonDL/GoGames/common/protocol"
+	"github.com/simpletonDL/GoGames/common/settings"
 	"net"
 )
 
@@ -33,8 +34,8 @@ func Run(port string) {
 		processor.GameEngine.ScheduleCommand(engine.CreatePlayerCommand{
 			Nickname: initCmd.Nickname,
 			PlayerId: engine.PlayerId(client.Id),
-			PosX:     2,
-			PosY:     15,
+			PosX:     settings.WorldWidth / 2,
+			PosY:     0,
 		})
 		currentClientId++
 	}

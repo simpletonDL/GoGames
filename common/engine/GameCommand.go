@@ -102,7 +102,7 @@ type CreatePlayerCommand struct {
 
 func (c CreatePlayerCommand) Execute(engine *GameEngine) {
 	// Hero body
-	body := AddHero(engine.World, 2, 15, 0.8, 1, 1, 0.3, c.PlayerId)
+	body := AddHero(engine.World, c.PosX, c.PosY, 0.8, 1, 1, 0.3, c.PlayerId)
 	engine.Players[c.PlayerId] = &PlayerInfo{
 		Nickname:              c.Nickname,
 		Body:                  body,
