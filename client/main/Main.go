@@ -32,10 +32,9 @@ func main() {
 	}
 	defer conn.Close()
 
-	game := &client.Game{
-		Conn:      conn,
-		GameState: protocol.NewEmptyGameState(),
-	}
+	game := client.NewGame(conn)
+	game.Send(protocol.NewClientInitializationCommand(nickname))
+
 	go game.HandleServerGameState()
 
 	ebiten.SetWindowSize(settings.ScreenWidth, settings.ScreenHeight)

@@ -62,6 +62,7 @@ func (e *GameEngine) ScheduleCommand(cmd GameCommand) {
 type PlayerId uint8
 
 type PlayerInfo struct {
+	Nickname              string
 	Body                  *box2d.B2Body
 	Direction             protocol.DirectionKind
 	MoveDownThrowPlatform bool
@@ -104,7 +105,7 @@ func GetGameState(engine *GameEngine) protocol.GameState {
 		if data.GetKind() == protocol.BodyKindHero {
 			playerInfo := engine.Players[data.(PlayerUserData).HeroId]
 			weaponInfo := playerInfo.Weapon.GetInfo()
-
+			object.Nickname = playerInfo.Nickname
 			object.Direction = playerInfo.Direction
 			object.WeaponKind = weaponInfo.WeaponKind
 			object.WeaponAvailableBullets = weaponInfo.WeaponAvailableBullets

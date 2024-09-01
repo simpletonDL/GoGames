@@ -14,7 +14,23 @@ import (
 
 type Game struct {
 	Conn      net.Conn
+	Encoder   *json.Encoder
 	GameState protocol.GameState
+}
+
+func NewGame(conn net.Conn) *Game {
+	return &Game{
+		Conn:      conn,
+		Encoder:   json.NewEncoder(conn),
+		GameState: protocol.NewEmptyGameState(),
+	}
+}
+
+func (g *Game) Send(msg any) {
+	err := g.Encoder.Encode(msg)
+	if err != nil {
+		log.Printf("Failed to serialize message to JSON: %v\n", err)
+	}
 }
 
 func (g *Game) Update() error {

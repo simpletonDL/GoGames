@@ -95,6 +95,7 @@ func (c PlayerInputCommand) Execute(engine *GameEngine) {
 }
 
 type CreatePlayerCommand struct {
+	Nickname   string
 	PlayerId   PlayerId
 	PosX, PosY float64
 }
@@ -103,6 +104,7 @@ func (c CreatePlayerCommand) Execute(engine *GameEngine) {
 	// Hero body
 	body := AddHero(engine.World, 2, 15, 0.8, 1, 1, 0.3, c.PlayerId)
 	engine.Players[c.PlayerId] = &PlayerInfo{
+		Nickname:              c.Nickname,
 		Body:                  body,
 		Direction:             protocol.DirectionKindRight,
 		MoveDownThrowPlatform: false,

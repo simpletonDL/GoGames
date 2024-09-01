@@ -44,6 +44,7 @@ type GameObject struct {
 	Width, Height float64
 	Direction     DirectionKind
 	// Player specific
+	Nickname                         string
 	WeaponKind                       WeaponKind
 	WeaponAvailableBullets           int
 	WeaponAvailableBulletsInMagazine int

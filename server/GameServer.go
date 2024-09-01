@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"github.com/simpletonDL/GoGames/common/engine"
+	"github.com/simpletonDL/GoGames/common/protocol"
 	"net"
 )
 
@@ -20,12 +21,17 @@ func Run(port string) {
 			continue
 		}
 		fmt.Printf("New connection from %s\n", conn.RemoteAddr())
-		client := Client{
-			Id:   currentClientId,
-			conn: conn,
+		client := NewClient(currentClientId, conn)
+
+		initCmd, err := Receive[protocol.ClientInitializationCommand](client)
+		if err != nil {
+			fmt.Printf("Error during client initializtion: %s\n", err.Error())
+			continue
 		}
+
 		processor.Clients = append(processor.Clients, client)
 		processor.GameEngine.ScheduleCommand(engine.CreatePlayerCommand{
+			Nickname: initCmd.Nickname,
 			PlayerId: engine.PlayerId(client.Id),
 			PosX:     2,
 			PosY:     15,

@@ -43,6 +43,7 @@ func Render(image *ebiten.Image, state *protocol.GameState) {
 
 	for _, obj := range state.Objects {
 		var weaponImage *ebiten.Image = nil
+		var nickname string
 
 		var objImage *ebiten.Image
 		switch obj.BodyKind {
@@ -51,6 +52,7 @@ func Render(image *ebiten.Image, state *protocol.GameState) {
 		case protocol.BodyKindHero:
 			objImage = HeroImage
 			weaponImage = getWeaponImage(obj.WeaponKind)
+			nickname = obj.Nickname
 		case protocol.BodyKindBullet:
 			objImage = BulletImage
 		case protocol.BodyKindPlatform:
@@ -70,6 +72,13 @@ func Render(image *ebiten.Image, state *protocol.GameState) {
 		objOptions := MakeImageOptions(objImage, width, height, xPos, yPos, angel, inverseX)
 		image.DrawImage(objImage, objOptions)
 
+		if nickname != "" {
+			face := &text.GoTextFace{Source: MainFont, Size: 8}
+			w, h := text.Measure(nickname, face, 0)
+			opts := text.DrawOptions{}
+			opts.GeoM.Translate(xPos-w/2, yPos-(height)/2-h)
+			text.Draw(image, nickname, face, &opts)
+		}
 		if weaponImage != nil {
 			// weapon image height should be hero height
 			scale := float64(height) / float64(weaponImage.Bounds().Dy())
