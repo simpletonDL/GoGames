@@ -52,6 +52,7 @@ type GameObject struct {
 	// Player specific
 	Nickname                         string
 	Team                             TeamKind
+	LivesCount                       int
 	WeaponKind                       WeaponKind
 	WeaponAvailableBullets           int
 	WeaponAvailableBulletsInMagazine int

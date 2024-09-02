@@ -115,6 +115,7 @@ type CreatePlayerCommand struct {
 	Team       protocol.TeamKind
 	PlayerId   PlayerId
 	PosX, PosY float64
+	LivesCount int8
 }
 
 func (c CreatePlayerCommand) Execute(engine *GameEngine) {
@@ -128,6 +129,8 @@ func (c CreatePlayerCommand) Execute(engine *GameEngine) {
 		MoveDownThrowPlatform: false,
 		JumpCount:             settings.PlayerMaxJumpCount,
 		Weapon:                NewDefaultGun(),
+		LivesCount:            c.LivesCount,
+		IsReadyToStart:        false,
 	}
 	fmt.Printf("createPlayerCommand: id=%d\n", c.PlayerId)
 }

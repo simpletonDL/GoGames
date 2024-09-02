@@ -32,6 +32,8 @@ const (
 	PlayerDownSpeed    = -7.0
 	PlayerMaxJumpCount = 2
 	PlayerAngularSpeed = math.Pi
+
+	PlayerLivesCount = 10
 )
 
 /* Inferred parameters */

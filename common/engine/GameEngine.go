@@ -97,6 +97,7 @@ type PlayerInfo struct {
 	MoveDownThrowPlatform bool
 	JumpCount             int8
 	Weapon                Weapon
+	LivesCount            int8
 
 	// SelectTeamMode
 	IsReadyToStart bool
@@ -145,6 +146,7 @@ func GetGameState(engine *GameEngine) protocol.GameState {
 			object.WeaponAvailableBulletsInMagazine = weaponInfo.WeaponAvailableBulletsInMagazine
 			object.WeaponMagazineCapacity = weaponInfo.WeaponMagazineCapacity
 			object.WeaponIsReady = weaponInfo.WeaponIsReady
+			object.LivesCount = int(playerInfo.LivesCount)
 		}
 
 		gameObjects = append(gameObjects, object)
@@ -173,6 +175,9 @@ func (e *GameEngine) processOutOfScreenBodies() {
 				newY := settings.WorldHeight
 				body.SetTransform(box2d.B2Vec2{X: float64(newX), Y: float64(newY)}, 0)
 				body.SetLinearVelocity(box2d.B2Vec2{X: 0, Y: 0})
+
+				playerInfo := e.Players[userData.(PlayerUserData).HeroId]
+				playerInfo.LivesCount -= 1
 			} else {
 				// remove body
 				e.World.DestroyBody(body)

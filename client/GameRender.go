@@ -106,7 +106,8 @@ func Render(image *ebiten.Image, state *protocol.GameState) {
 		return object.BodyKind == protocol.BodyKindHero
 	})
 	for i, player := range players {
-		playerTextInfo := fmt.Sprintf("L: 7, C: %d/%d (%d)",
+		playerTextInfo := fmt.Sprintf("L: %d, C: %d/%d (%d)",
+			player.LivesCount,
 			player.WeaponAvailableBulletsInMagazine,
 			player.WeaponMagazineCapacity,
 			player.WeaponAvailableBullets,

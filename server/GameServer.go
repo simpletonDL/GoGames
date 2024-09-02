@@ -27,11 +27,12 @@ func Run(port string) {
 	gameProcessor := NewGameProcessor(engine.MainGameMode, clientManager)
 	for playerId, info := range selectTeamProcessor.GameEngine.Players {
 		gameProcessor.GameEngine.Input <- engine.CreatePlayerCommand{
-			Nickname: info.Nickname,
-			Team:     info.Team,
-			PlayerId: playerId,
-			PosX:     settings.WorldWidth / 2,
-			PosY:     settings.WorldHeight,
+			Nickname:   info.Nickname,
+			Team:       info.Team,
+			PlayerId:   playerId,
+			PosX:       settings.WorldWidth / 2,
+			PosY:       settings.WorldHeight,
+			LivesCount: settings.PlayerLivesCount,
 		}
 	}
 	go gameProcessor.Run()
