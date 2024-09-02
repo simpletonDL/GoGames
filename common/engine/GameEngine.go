@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/simpletonDL/GoGames/common/protocol"
 	"github.com/simpletonDL/GoGames/common/settings"
+	"github.com/simpletonDL/GoGames/common/utils"
 	"github.com/simpletonDL/box2d"
 	"math/rand"
 	"time"
@@ -26,11 +27,11 @@ const (
 	MainGameMode
 )
 
-func NewGameEngine(ctx context.Context, createWorldFun func() *box2d.B2World, events []GameEvent, mod GameEngineMod) *GameEngine {
+func NewGameEngine(ctx context.Context, createWorldFun func() *box2d.B2World, events []GameEvent, mod GameEngineMod, InputQueue chan GameCommand) *GameEngine {
 	engine := &GameEngine{
 		Ctx:       ctx,
 		World:     createWorldFun(),
-		Input:     make(chan GameCommand, settings.GameInputCapacity),
+		Input:     InputQueue,
 		Players:   map[PlayerId]*PlayerInfo{},
 		Listeners: []GameEngineListener{},
 		Events:    events,
@@ -41,16 +42,16 @@ func NewGameEngine(ctx context.Context, createWorldFun func() *box2d.B2World, ev
 	return engine
 }
 
-func NewMainGameEngine(ctx context.Context, mod GameEngineMod) *GameEngine {
+func NewMainGameEngine(ctx context.Context, mod GameEngineMod, inputQueue chan GameCommand) *GameEngine {
 	events := []GameEvent{
 		NewWeaponBoxCreationEvent(time.Second*10, 2),
 		NewBoxCreationEvent(time.Second*10, 2),
 	}
-	return NewGameEngine(ctx, createMainGameWorld, events, mod)
+	return NewGameEngine(ctx, createMainGameWorld, events, mod, inputQueue)
 }
 
-func NewSelectTeamGameEngine(ctx context.Context, mod GameEngineMod) *GameEngine {
-	return NewGameEngine(ctx, createSelectTeamWorld, []GameEvent{}, mod)
+func NewSelectTeamGameEngine(ctx context.Context, mod GameEngineMod, inputQueue chan GameCommand) *GameEngine {
+	return NewGameEngine(ctx, createSelectTeamWorld, []GameEvent{}, mod, inputQueue)
 }
 
 func (e *GameEngine) Run(fps int, velocityIterations int, positionIterations int) {
@@ -65,6 +66,7 @@ func (e *GameEngine) Run(fps int, velocityIterations int, positionIterations int
 		<-ticker.C
 		select {
 		case <-e.Ctx.Done():
+			utils.Log("GameEngine Box2D loop cancelled\n")
 			return
 		default:
 		}

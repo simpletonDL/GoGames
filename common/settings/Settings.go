@@ -40,3 +40,9 @@ const (
 	PlayerHorizontalAccelerationPerFrame = PlayerMaxHorizontalSpeed /
 		(float64(PlayerGetMaxHorizontalSpeedTime) / float64(time.Second) * GameFPS)
 )
+
+/* Dev parameters */
+
+const (
+	Debug = true
+)

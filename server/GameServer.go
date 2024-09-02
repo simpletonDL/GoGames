@@ -10,10 +10,35 @@ import (
 
 func Run(port string) {
 	l, _ := net.Listen("tcp4", port)
-	defer l.Close()
+	// TODO: close connection?
 
-	processor := NewGameProcessor(engine.SelectTeamMode)
-	go processor.Run()
+	/* Client handler */
+	clientManager := NewClientManager()
+	go acceptClients(l, clientManager)
+
+	/* Select team phase */
+
+	selectTeamProcessor := NewGameProcessor(engine.SelectTeamMode, clientManager)
+	go selectTeamProcessor.Run()
+	<-selectTeamProcessor.ReadyToStart
+	selectTeamProcessor.Cancel()
+
+	/* Main game session */
+	gameProcessor := NewGameProcessor(engine.MainGameMode, clientManager)
+	for playerId, info := range selectTeamProcessor.GameEngine.Players {
+		gameProcessor.GameEngine.Input <- engine.CreatePlayerCommand{
+			Nickname: info.Nickname,
+			Team:     info.Team,
+			PlayerId: playerId,
+			PosX:     settings.WorldWidth / 2,
+			PosY:     settings.WorldHeight,
+		}
+	}
+	go gameProcessor.Run()
+	<-gameProcessor.Finished
+}
+
+func acceptClients(l net.Listener, manager *ClientManager) {
 	currentClientId := uint8(0)
 	for {
 		conn, err := l.Accept()
@@ -30,8 +55,8 @@ func Run(port string) {
 			continue
 		}
 
-		processor.ConnectClient(client)
-		processor.GameEngine.ScheduleCommand(engine.CreatePlayerCommand{
+		manager.ConnectClient(client)
+		manager.EnqueueCommand(engine.CreatePlayerCommand{
 			Nickname: initCmd.Nickname,
 			Team:     protocol.BlueTeam,
 			PlayerId: engine.PlayerId(client.Id),

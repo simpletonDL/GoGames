@@ -2,6 +2,7 @@ package engine
 
 import (
 	"github.com/simpletonDL/GoGames/common/settings"
+	"github.com/simpletonDL/GoGames/common/utils"
 	"math/rand"
 	"time"
 )
@@ -56,6 +57,7 @@ func (e *GameEngine) RunEvent(event GameEvent) {
 	for {
 		select {
 		case <-e.Ctx.Done():
+			utils.Log("GameEngine Box2D Event cancelled\n")
 			return
 		default:
 		}
