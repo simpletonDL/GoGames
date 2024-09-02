@@ -16,23 +16,41 @@ type GameEngine struct {
 	Players   map[PlayerId]*PlayerInfo
 	Listeners []GameEngineListener
 	Events    []GameEvent
+	Mod       GameEngineMod
 }
 
-func NewGameEngine(ctx context.Context, inputCapacity int) *GameEngine {
+type GameEngineMod uint8
+
+const (
+	SelectTeamMode = GameEngineMod(iota)
+	MainGameMode
+)
+
+func NewGameEngine(ctx context.Context, createWorldFun func() *box2d.B2World, events []GameEvent, mod GameEngineMod) *GameEngine {
 	engine := &GameEngine{
 		Ctx:       ctx,
-		World:     createInitialWorld(),
-		Input:     make(chan GameCommand, inputCapacity),
+		World:     createWorldFun(),
+		Input:     make(chan GameCommand, settings.GameInputCapacity),
 		Players:   map[PlayerId]*PlayerInfo{},
 		Listeners: []GameEngineListener{},
-		Events: []GameEvent{
-			NewWeaponBoxCreationEvent(time.Second*10, 2),
-			NewBoxCreationEvent(time.Second*10, 2),
-		},
+		Events:    events,
+		Mod:       mod,
 	}
 	// Add collision logic
 	engine.World.SetContactListener(NewCollisionTracker(engine))
 	return engine
+}
+
+func NewMainGameEngine(ctx context.Context, mod GameEngineMod) *GameEngine {
+	events := []GameEvent{
+		NewWeaponBoxCreationEvent(time.Second*10, 2),
+		NewBoxCreationEvent(time.Second*10, 2),
+	}
+	return NewGameEngine(ctx, createMainGameWorld, events, mod)
+}
+
+func NewSelectTeamGameEngine(ctx context.Context, mod GameEngineMod) *GameEngine {
+	return NewGameEngine(ctx, createSelectTeamWorld, []GameEvent{}, mod)
 }
 
 func (e *GameEngine) Run(fps int, velocityIterations int, positionIterations int) {
@@ -58,7 +76,7 @@ func (e *GameEngine) Run(fps int, velocityIterations int, positionIterations int
 		e.processOutOfScreenBodies()
 		e.processWeaponsReload()
 		for _, listener := range e.Listeners {
-			listener(GetGameState(e))
+			listener(e)
 		}
 	}
 }
@@ -71,14 +89,18 @@ type PlayerId uint8
 
 type PlayerInfo struct {
 	Nickname              string
+	Team                  protocol.TeamKind
 	Body                  *box2d.B2Body
 	Direction             protocol.DirectionKind
 	MoveDownThrowPlatform bool
 	JumpCount             int8
 	Weapon                Weapon
+
+	// SelectTeamMode
+	IsReadyToStart bool
 }
 
-type GameEngineListener func(world protocol.GameState)
+type GameEngineListener func(engine *GameEngine)
 
 func (e *GameEngine) AddListener(listener GameEngineListener) {
 	e.Listeners = append(e.Listeners, listener)
@@ -114,6 +136,7 @@ func GetGameState(engine *GameEngine) protocol.GameState {
 			playerInfo := engine.Players[data.(PlayerUserData).HeroId]
 			weaponInfo := playerInfo.Weapon.GetInfo()
 			object.Nickname = playerInfo.Nickname
+			object.Team = playerInfo.Team
 			object.Direction = playerInfo.Direction
 			object.WeaponKind = weaponInfo.WeaponKind
 			object.WeaponAvailableBullets = weaponInfo.WeaponAvailableBullets

@@ -12,7 +12,7 @@ func Run(port string) {
 	l, _ := net.Listen("tcp4", port)
 	defer l.Close()
 
-	processor := NewGameProcessor()
+	processor := NewGameProcessor(engine.SelectTeamMode)
 	go processor.Run()
 	currentClientId := uint8(0)
 	for {
@@ -33,9 +33,10 @@ func Run(port string) {
 		processor.ConnectClient(client)
 		processor.GameEngine.ScheduleCommand(engine.CreatePlayerCommand{
 			Nickname: initCmd.Nickname,
+			Team:     protocol.BlueTeam,
 			PlayerId: engine.PlayerId(client.Id),
 			PosX:     settings.WorldWidth / 2,
-			PosY:     0,
+			PosY:     settings.WorldHeight,
 		})
 		currentClientId++
 	}

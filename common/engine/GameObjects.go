@@ -2,6 +2,7 @@ package engine
 
 import (
 	"github.com/simpletonDL/GoGames/common/protocol"
+	"github.com/simpletonDL/GoGames/common/settings"
 	"github.com/simpletonDL/box2d"
 )
 
@@ -124,7 +125,7 @@ func NewWorld(gravityX float64, gravityY float64) *box2d.B2World {
 	return &world
 }
 
-func createInitialWorld() *box2d.B2World {
+func createMainGameWorld() *box2d.B2World {
 	// Create default map
 
 	world := NewWorld(0, -20)
@@ -137,6 +138,21 @@ func createInitialWorld() *box2d.B2World {
 
 	// Dynamic body
 	AddBox(world, 8, 15, 1, 1, 1, 1, 0.3)
+
+	return world
+}
+
+func createSelectTeamWorld() *box2d.B2World {
+	// Create default map
+
+	world := NewWorld(0, -20)
+	// Platforms
+	AddPlatform(world, settings.WorldWidth/2, 1, 0, settings.WorldWidth, 1, 0, 1)
+
+	// Dynamic body
+	AddBox(world, 4, 15, 1, 1, 1, 1, 0.3)
+	AddBox(world, 12, 15, 1, 1, 1, 1, 0.3)
+	AddBox(world, 18, 15, 1, 1, 1, 1, 0.3)
 
 	return world
 }

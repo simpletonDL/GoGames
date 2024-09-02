@@ -128,6 +128,21 @@ func (g *Game) Update() error {
 			log.Printf("Failed to serialize message to JSON: %v\n", err)
 		}
 	}
+	if ebiten.IsKeyPressed(ebiten.KeyEnter) {
+		message := protocol.NewReadyToStartCommand()
+		err := encoder.Encode(message)
+		if err != nil {
+			log.Printf("Failed to serialize message to JSON: %v\n", err)
+		}
+	}
+	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
+		message := protocol.NewNotReadyToStartCommand()
+		err := encoder.Encode(message)
+		if err != nil {
+			log.Printf("Failed to serialize message to JSON: %v\n", err)
+		}
+	}
+
 	return nil
 }
 

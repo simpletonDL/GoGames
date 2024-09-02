@@ -28,11 +28,11 @@ func Receive[T any](client Client) (result T, err error) {
 	return
 }
 
-func HandleClientInput(client Client, processor *GameProcessor) {
+func (p *GameProcessor) HandleClientInput(client Client) {
 	defer client.conn.Close()
 	for {
 		select {
-		case <-processor.Ctx.Done():
+		case <-p.Ctx.Done():
 			return
 		default:
 		}
@@ -44,7 +44,7 @@ func HandleClientInput(client Client, processor *GameProcessor) {
 			fmt.Printf("Error decoding JSON: %s\n", err.Error())
 			continue
 		}
-		processor.GameEngine.ScheduleCommand(engine.PlayerInputCommand{PlayerId: engine.PlayerId(client.Id), Cmd: cmd})
+		p.GameEngine.ScheduleCommand(engine.PlayerInputCommand{PlayerId: engine.PlayerId(client.Id), Cmd: cmd})
 	}
 	fmt.Printf("Connection closed: %s\n", client.conn.RemoteAddr())
 }

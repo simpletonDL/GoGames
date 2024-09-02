@@ -32,6 +32,21 @@ type PlayerInputCommand struct {
 
 func (c PlayerInputCommand) Execute(engine *GameEngine) {
 	playerInfo := engine.Players[c.PlayerId]
+
+	if engine.Mod == SelectTeamMode {
+		switch c.Cmd.Id {
+		case protocol.InputCommandKind.ReadyToStart:
+			playerInfo.IsReadyToStart = true
+		case protocol.InputCommandKind.NotReadyToStart:
+			playerInfo.IsReadyToStart = false
+		}
+
+		if playerInfo.IsReadyToStart {
+			// If player is ready to start, he should be immovable
+			return
+		}
+	}
+
 	switch c.Cmd.Id {
 	case protocol.InputCommandKind.MouseClick:
 		x := c.Cmd.FloatArgs["x"]
@@ -91,11 +106,13 @@ func (c PlayerInputCommand) Execute(engine *GameEngine) {
 		weapon := CreateWeapon(weaponKind)
 		playerInfo.Weapon = weapon
 	}
+	// TODO: remove
 	engine.Players[c.PlayerId] = playerInfo
 }
 
 type CreatePlayerCommand struct {
 	Nickname   string
+	Team       protocol.TeamKind
 	PlayerId   PlayerId
 	PosX, PosY float64
 }
@@ -105,6 +122,7 @@ func (c CreatePlayerCommand) Execute(engine *GameEngine) {
 	body := AddHero(engine.World, c.PosX, c.PosY, 0.8, 1, 1, 0.3, c.PlayerId)
 	engine.Players[c.PlayerId] = &PlayerInfo{
 		Nickname:              c.Nickname,
+		Team:                  c.Team,
 		Body:                  body,
 		Direction:             protocol.DirectionKindRight,
 		MoveDownThrowPlatform: false,

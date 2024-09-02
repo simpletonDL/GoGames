@@ -3,6 +3,7 @@ package protocol
 type BodyKind uint8
 type DirectionKind bool
 type WeaponKind int
+type TeamKind int
 
 const (
 	BodyKindBox = BodyKind(iota)
@@ -26,6 +27,11 @@ const (
 	WeaponKindCount
 )
 
+const (
+	BlueTeam = TeamKind(iota)
+	RedTeam
+)
+
 type GameState struct {
 	Objects []GameObject
 }
@@ -45,6 +51,7 @@ type GameObject struct {
 	Direction     DirectionKind
 	// Player specific
 	Nickname                         string
+	Team                             TeamKind
 	WeaponKind                       WeaponKind
 	WeaponAvailableBullets           int
 	WeaponAvailableBulletsInMagazine int

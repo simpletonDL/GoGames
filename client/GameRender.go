@@ -77,6 +77,11 @@ func Render(image *ebiten.Image, state *protocol.GameState) {
 			w, h := text.Measure(nickname, face, 0)
 			opts := text.DrawOptions{}
 			opts.GeoM.Translate(xPos-w/2, yPos-(height)/2-h)
+			if obj.Team == protocol.BlueTeam {
+				opts.ColorScale.Scale(0, 191, 255, 1)
+			} else {
+				opts.ColorScale.Scale(255, 0, 0, 1)
+			}
 			text.Draw(image, nickname, face, &opts)
 		}
 		if weaponImage != nil {

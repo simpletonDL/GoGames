@@ -1,17 +1,23 @@
 package protocol
 
 var InputCommandKind = struct {
-	MouseClick   uint8
-	MoveHero     uint8
-	MakeShoot    uint8
-	RotateHero   uint8
-	ChangeWeapon uint8
+	MouseClick      uint8
+	MoveHero        uint8
+	MakeShoot       uint8
+	RotateHero      uint8
+	ChangeWeapon    uint8
+	ReadyToStart    uint8
+	NotReadyToStart uint8
 }{
 	MouseClick:   0,
 	MoveHero:     1,
 	MakeShoot:    2,
 	RotateHero:   3,
 	ChangeWeapon: 4,
+
+	// Select team specific commands
+	ReadyToStart:    5,
+	NotReadyToStart: 6,
 }
 
 type GameInput []ClientInputCommand
@@ -75,6 +81,18 @@ func NewRotateHeroCommand(rotateKind int) ClientInputCommand {
 		IntArgs: map[string]int{
 			"kind": rotateKind,
 		},
+	}
+}
+
+func NewReadyToStartCommand() ClientInputCommand {
+	return ClientInputCommand{
+		Id: InputCommandKind.ReadyToStart,
+	}
+}
+
+func NewNotReadyToStartCommand() ClientInputCommand {
+	return ClientInputCommand{
+		Id: InputCommandKind.NotReadyToStart,
 	}
 }
 
