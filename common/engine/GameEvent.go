@@ -55,13 +55,13 @@ func NewBoxCreationEvent(frequency time.Duration, boxesCountPerTime int) *Object
 func (e *GameEngine) RunEvent(event GameEvent) {
 	ticker := time.NewTicker(event.GetFrequency(e))
 	for {
+		<-ticker.C
 		select {
 		case <-e.Ctx.Done():
 			utils.Log("GameEngine Box2D Event cancelled\n")
 			return
 		default:
 		}
-		<-ticker.C
 		e.ScheduleCommand(NewCustomCommand(func(e *GameEngine) {
 			event.ProcessEvent(e)
 		}))

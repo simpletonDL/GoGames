@@ -14,16 +14,18 @@ import (
 )
 
 type Client struct {
-	Id      uint8
-	conn    net.Conn
-	Decoder *json.Decoder
+	Id       engine.PlayerId
+	Nickname string
+	conn     net.Conn
+	Decoder  *json.Decoder
 }
 
 func NewClient(id uint8, conn net.Conn) Client {
 	return Client{
-		Id:      id,
-		conn:    conn,
-		Decoder: json.NewDecoder(conn),
+		Id:       engine.PlayerId(id),
+		Nickname: "",
+		conn:     conn,
+		Decoder:  json.NewDecoder(conn),
 	}
 }
 
@@ -90,7 +92,7 @@ func (h *ClientManager) HandleClientInput(client Client) {
 			fmt.Printf("Error decoding JSON: %s\n", err.Error())
 			continue
 		}
-		h.EnqueueCommand(engine.PlayerInputCommand{PlayerId: engine.PlayerId(client.Id), Cmd: cmd})
+		h.EnqueueCommand(engine.PlayerInputCommand{PlayerId: client.Id, Cmd: cmd})
 	}
 	fmt.Printf("Connection closed: %s\n", client.conn.RemoteAddr())
 }

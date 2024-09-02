@@ -18,6 +18,7 @@ type GameEngine struct {
 	Listeners []GameEngineListener
 	Events    []GameEvent
 	Mod       GameEngineMod
+	TeamWin   chan protocol.TeamKind
 }
 
 type GameEngineMod uint8
@@ -36,6 +37,7 @@ func NewGameEngine(ctx context.Context, createWorldFun func() *box2d.B2World, ev
 		Listeners: []GameEngineListener{},
 		Events:    events,
 		Mod:       mod,
+		TeamWin:   make(chan protocol.TeamKind, 1),
 	}
 	// Add collision logic
 	engine.World.SetContactListener(NewCollisionTracker(engine))
@@ -76,7 +78,11 @@ func (e *GameEngine) Run(fps int, velocityIterations int, positionIterations int
 		}
 		e.World.Step(timestamp, velocityIterations, positionIterations)
 		e.processOutOfScreenBodies()
-		e.processPlayersDeath()
+
+		if e.Mod == MainGameMode {
+			e.processPlayersDeath()
+		}
+
 		e.processWeaponsReload()
 		for _, listener := range e.Listeners {
 			listener(e)
@@ -194,6 +200,19 @@ func (e *GameEngine) processPlayersDeath() {
 			playerInfo.IsAlive = false
 			e.World.DestroyBody(playerInfo.Body)
 		}
+	}
+
+	alivePlayers := utils.Filter(utils.Values(e.Players), func(info *PlayerInfo) bool {
+		return info.IsAlive == true
+	})
+	blueAlivePlayers := utils.Filter(alivePlayers, func(info *PlayerInfo) bool { return info.Team == protocol.BlueTeam })
+	redAlivePlayers := utils.Filter(alivePlayers, func(info *PlayerInfo) bool { return info.Team == protocol.RedTeam })
+
+	if len(blueAlivePlayers) == 0 {
+		e.TeamWin <- protocol.RedTeam
+	}
+	if len(redAlivePlayers) == 0 {
+		e.TeamWin <- protocol.BlueTeam
 	}
 }
 

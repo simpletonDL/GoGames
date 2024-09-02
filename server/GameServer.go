@@ -5,6 +5,7 @@ import (
 	"github.com/simpletonDL/GoGames/common/engine"
 	"github.com/simpletonDL/GoGames/common/protocol"
 	"github.com/simpletonDL/GoGames/common/settings"
+	"github.com/simpletonDL/GoGames/common/utils"
 	"net"
 )
 
@@ -18,25 +19,39 @@ func Run(port string) {
 
 	/* Select team phase */
 
-	selectTeamProcessor := NewGameProcessor(engine.SelectTeamMode, clientManager)
-	go selectTeamProcessor.Run()
-	<-selectTeamProcessor.ReadyToStart
-	selectTeamProcessor.Cancel()
-
-	/* Main game session */
-	gameProcessor := NewGameProcessor(engine.MainGameMode, clientManager)
-	for playerId, info := range selectTeamProcessor.GameEngine.Players {
-		gameProcessor.GameEngine.Input <- engine.CreatePlayerCommand{
-			Nickname:   info.Nickname,
-			Team:       info.Team,
-			PlayerId:   playerId,
-			PosX:       settings.WorldWidth / 2,
-			PosY:       settings.WorldHeight,
-			LivesCount: settings.PlayerLivesCount,
+	for {
+		selectTeamProcessor := NewGameProcessor(engine.SelectTeamMode, clientManager)
+		// TODO: make it thread-safe
+		currentClients := clientManager.GetAllClients()
+		for _, client := range currentClients {
+			addPlayerToWorld(selectTeamProcessor, client.Nickname, protocol.BlueTeam, client.Id)
 		}
+
+		go selectTeamProcessor.Run()
+		<-selectTeamProcessor.ReadyToStart
+		selectTeamProcessor.Cancel()
+
+		/* Main game session */
+		gameProcessor := NewGameProcessor(engine.MainGameMode, clientManager)
+		for playerId, info := range selectTeamProcessor.GameEngine.Players {
+			addPlayerToWorld(gameProcessor, info.Nickname, info.Team, playerId)
+		}
+		go gameProcessor.Run()
+		winner := <-gameProcessor.TeamWin
+		utils.Log("Winner: %s", winner.ToString())
+		gameProcessor.Cancel()
 	}
-	go gameProcessor.Run()
-	<-gameProcessor.Finished
+}
+
+func addPlayerToWorld(gameProcessor *GameProcessor, nickname string, team protocol.TeamKind, playerId engine.PlayerId) {
+	gameProcessor.GameEngine.Input <- engine.CreatePlayerCommand{
+		Nickname:   nickname,
+		Team:       team,
+		PlayerId:   playerId,
+		PosX:       settings.WorldWidth / 2,
+		PosY:       settings.WorldHeight,
+		LivesCount: settings.PlayerLivesCount,
+	}
 }
 
 func acceptClients(l net.Listener, manager *ClientManager) {
@@ -55,12 +70,13 @@ func acceptClients(l net.Listener, manager *ClientManager) {
 			fmt.Printf("Error during client initializtion: %s\n", err.Error())
 			continue
 		}
+		client.Nickname = initCmd.Nickname
 
 		manager.ConnectClient(client)
 		manager.EnqueueCommand(engine.CreatePlayerCommand{
 			Nickname:   initCmd.Nickname,
 			Team:       protocol.BlueTeam,
-			PlayerId:   engine.PlayerId(client.Id),
+			PlayerId:   client.Id,
 			PosX:       settings.WorldWidth / 2,
 			PosY:       settings.WorldHeight,
 			LivesCount: 100,

@@ -24,7 +24,7 @@ type GameProcessor struct {
 	ReadyToStart chan bool
 
 	// MainGameMode
-	Finished chan bool
+	TeamWin chan protocol.TeamKind
 }
 
 func NewGameProcessor(mod engine.GameEngineMod, clientManager *ClientManager) *GameProcessor {
@@ -45,6 +45,7 @@ func NewGameProcessor(mod engine.GameEngineMod, clientManager *ClientManager) *G
 		GameEngine:   gameEngine,
 		Mod:          mod,
 		ReadyToStart: make(chan bool, 1),
+		TeamWin:      gameEngine.TeamWin,
 	}
 	// This callback sends new game state to client every timestamp
 	processor.GameEngine.AddListener(func(e *engine.GameEngine) {
