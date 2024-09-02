@@ -160,7 +160,7 @@ func NewMachineGun() Weapon {
 }
 
 func NewCarbine() Weapon {
-	return NewDefaultWeapon(protocol.WeaponKindCarbine, 52, 13, 11, 24, 1.0, 1*time.Second, 100*time.Millisecond)
+	return NewDefaultWeapon(protocol.WeaponKindCarbine, 52, 13, 11, 24, 2.0, 1*time.Second, 100*time.Millisecond)
 }
 
 func CreateWeapon(kind protocol.WeaponKind) Weapon {
