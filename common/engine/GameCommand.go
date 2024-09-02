@@ -32,6 +32,10 @@ type PlayerInputCommand struct {
 
 func (c PlayerInputCommand) Execute(engine *GameEngine) {
 	playerInfo := engine.Players[c.PlayerId]
+	if !playerInfo.IsAlive {
+		// Don't process commands from dead players
+		return
+	}
 
 	if engine.Mod == SelectTeamMode {
 		switch c.Cmd.Id {
@@ -131,6 +135,7 @@ func (c CreatePlayerCommand) Execute(engine *GameEngine) {
 		Weapon:                NewDefaultGun(),
 		LivesCount:            c.LivesCount,
 		IsReadyToStart:        false,
+		IsAlive:               true,
 	}
 	fmt.Printf("createPlayerCommand: id=%d\n", c.PlayerId)
 }

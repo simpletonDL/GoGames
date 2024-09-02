@@ -17,6 +17,30 @@ func Filter[E any](s []E, f func(E) bool) []E {
 	return s2
 }
 
+func Map[K comparable, V any, R any](m map[K]V, f func(K, V) R) []R {
+	result := []R{}
+	for k, v := range m {
+		result = append(result, f(k, v))
+	}
+	return result
+}
+
+func First[T1, T2 any](x T1, y T2) T1 {
+	return x
+}
+
+func Second[T1, T2 any](x T1, y T2) T2 {
+	return y
+}
+
+func Keys[K comparable, V any](m map[K]V) []K {
+	return Map(m, First)
+}
+
+func Values[K comparable, V any](m map[K]V) []V {
+	return Map(m, Second)
+}
+
 func All[E any](xs []E, f func(E) bool) bool {
 	for _, x := range xs {
 		if !f(x) {

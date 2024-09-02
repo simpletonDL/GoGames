@@ -58,11 +58,12 @@ func acceptClients(l net.Listener, manager *ClientManager) {
 
 		manager.ConnectClient(client)
 		manager.EnqueueCommand(engine.CreatePlayerCommand{
-			Nickname: initCmd.Nickname,
-			Team:     protocol.BlueTeam,
-			PlayerId: engine.PlayerId(client.Id),
-			PosX:     settings.WorldWidth / 2,
-			PosY:     settings.WorldHeight,
+			Nickname:   initCmd.Nickname,
+			Team:       protocol.BlueTeam,
+			PlayerId:   engine.PlayerId(client.Id),
+			PosX:       settings.WorldWidth / 2,
+			PosY:       settings.WorldHeight,
+			LivesCount: 100,
 		})
 		currentClientId++
 	}

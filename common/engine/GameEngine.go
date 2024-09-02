@@ -76,6 +76,7 @@ func (e *GameEngine) Run(fps int, velocityIterations int, positionIterations int
 		}
 		e.World.Step(timestamp, velocityIterations, positionIterations)
 		e.processOutOfScreenBodies()
+		e.processPlayersDeath()
 		e.processWeaponsReload()
 		for _, listener := range e.Listeners {
 			listener(e)
@@ -98,6 +99,7 @@ type PlayerInfo struct {
 	JumpCount             int8
 	Weapon                Weapon
 	LivesCount            int8
+	IsAlive               bool
 
 	// SelectTeamMode
 	IsReadyToStart bool
@@ -182,6 +184,15 @@ func (e *GameEngine) processOutOfScreenBodies() {
 				// remove body
 				e.World.DestroyBody(body)
 			}
+		}
+	}
+}
+
+func (e *GameEngine) processPlayersDeath() {
+	for _, playerInfo := range e.Players {
+		if playerInfo.LivesCount == 0 && playerInfo.IsAlive {
+			playerInfo.IsAlive = false
+			e.World.DestroyBody(playerInfo.Body)
 		}
 	}
 }
