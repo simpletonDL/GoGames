@@ -100,34 +100,6 @@ func (g *Game) Update() error {
 			log.Printf("Failed to serialize message to JSON: %v\n", err)
 		}
 	}
-	if ebiten.IsKeyPressed(ebiten.KeyDigit1) {
-		message := protocol.NewChangeWeaponCommand(protocol.WeaponKindDefault)
-		err := encoder.Encode(message)
-		if err != nil {
-			log.Printf("Failed to serialize message to JSON: %v\n", err)
-		}
-	}
-	if ebiten.IsKeyPressed(ebiten.KeyDigit2) {
-		message := protocol.NewChangeWeaponCommand(protocol.WeaponKindSniperRifle)
-		err := encoder.Encode(message)
-		if err != nil {
-			log.Printf("Failed to serialize message to JSON: %v\n", err)
-		}
-	}
-	if ebiten.IsKeyPressed(ebiten.KeyDigit3) {
-		message := protocol.NewChangeWeaponCommand(protocol.WeaponKindMachineGun)
-		err := encoder.Encode(message)
-		if err != nil {
-			log.Printf("Failed to serialize message to JSON: %v\n", err)
-		}
-	}
-	if ebiten.IsKeyPressed(ebiten.KeyDigit4) {
-		message := protocol.NewChangeWeaponCommand(protocol.WeaponKindCarbine)
-		err := encoder.Encode(message)
-		if err != nil {
-			log.Printf("Failed to serialize message to JSON: %v\n", err)
-		}
-	}
 	if ebiten.IsKeyPressed(ebiten.KeyEnter) {
 		message := protocol.NewReadyToStartCommand()
 		err := encoder.Encode(message)
@@ -140,6 +112,36 @@ func (g *Game) Update() error {
 		err := encoder.Encode(message)
 		if err != nil {
 			log.Printf("Failed to serialize message to JSON: %v\n", err)
+		}
+	}
+	if settings.Debug {
+		if ebiten.IsKeyPressed(ebiten.KeyDigit1) {
+			message := protocol.NewChangeWeaponCommand(protocol.WeaponKindDefault)
+			err := encoder.Encode(message)
+			if err != nil {
+				log.Printf("Failed to serialize message to JSON: %v\n", err)
+			}
+		}
+		if ebiten.IsKeyPressed(ebiten.KeyDigit2) {
+			message := protocol.NewChangeWeaponCommand(protocol.WeaponKindSniperRifle)
+			err := encoder.Encode(message)
+			if err != nil {
+				log.Printf("Failed to serialize message to JSON: %v\n", err)
+			}
+		}
+		if ebiten.IsKeyPressed(ebiten.KeyDigit3) {
+			message := protocol.NewChangeWeaponCommand(protocol.WeaponKindMachineGun)
+			err := encoder.Encode(message)
+			if err != nil {
+				log.Printf("Failed to serialize message to JSON: %v\n", err)
+			}
+		}
+		if ebiten.IsKeyPressed(ebiten.KeyDigit4) {
+			message := protocol.NewChangeWeaponCommand(protocol.WeaponKindCarbine)
+			err := encoder.Encode(message)
+			if err != nil {
+				log.Printf("Failed to serialize message to JSON: %v\n", err)
+			}
 		}
 	}
 
