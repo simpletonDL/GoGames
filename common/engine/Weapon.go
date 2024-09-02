@@ -156,7 +156,7 @@ func NewSniperRifle() Weapon {
 }
 
 func NewMachineGun() Weapon {
-	return NewDefaultWeapon(protocol.WeaponKindMachineGun, 140, 70, 5, 20, 0.9, 2*time.Second, 60*time.Millisecond)
+	return NewDefaultWeapon(protocol.WeaponKindMachineGun, 140, 70, 4.5, 20, 0.9, 2*time.Second, 60*time.Millisecond)
 }
 
 func NewCarbine() Weapon {
