@@ -120,7 +120,7 @@ func addPlayerTextInfo(image *ebiten.Image, players []protocol.GameObject, team 
 			weaponAvailableBullets = fmt.Sprintf("%d", player.WeaponAvailableBullets)
 		}
 
-		playerTextInfo := fmt.Sprintf("%s L=%d C=%d/%d (%s)",
+		playerTextInfo := fmt.Sprintf("%s L=%d B=%d/%d (%s)",
 			utils.AdjustString(player.Nickname, 15),
 			player.LivesCount,
 			player.WeaponAvailableBulletsInMagazine,
