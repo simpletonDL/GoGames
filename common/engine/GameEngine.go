@@ -44,9 +44,9 @@ func NewGameEngine(ctx context.Context, createWorldFun func() *box2d.B2World, ev
 	return engine
 }
 
-func NewMainGameEngine(ctx context.Context, mod GameEngineMod, inputQueue chan GameCommand) *GameEngine {
+func NewMainGameEngine(ctx context.Context, mod GameEngineMod, inputQueue chan GameCommand, clientCount int) *GameEngine {
 	events := []GameEvent{
-		NewWeaponBoxCreationEvent(time.Second*10, 2),
+		NewWeaponBoxCreationEvent(time.Second*10, max(1, clientCount/2)),
 		NewBoxCreationEvent(time.Second*10, 2),
 	}
 	return NewGameEngine(ctx, createMainGameWorld, events, mod, inputQueue)

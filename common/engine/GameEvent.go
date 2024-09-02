@@ -35,8 +35,10 @@ func NewWeaponBoxCreationEvent(frequency time.Duration, boxesCountPerTime int) *
 		frequency:          frequency,
 		objectCountPerTime: boxesCountPerTime,
 		createObjectFun: func(engine *GameEngine) {
-			x := rand.Uint32() % settings.WorldWidth
-			AddWeaponBox(engine.World, float64(x), settings.WorldHeight, rand.Float64(), 1, 1, 1, 0.4)
+			for i := 0; i < boxesCountPerTime; i++ {
+				x := rand.Uint32() % settings.WorldWidth
+				AddWeaponBox(engine.World, float64(x), settings.WorldHeight, rand.Float64(), 1, 1, 1, 0.4)
+			}
 		},
 	}
 }
@@ -46,8 +48,10 @@ func NewBoxCreationEvent(frequency time.Duration, boxesCountPerTime int) *Object
 		frequency:          frequency,
 		objectCountPerTime: boxesCountPerTime,
 		createObjectFun: func(engine *GameEngine) {
-			x := rand.Uint32() % settings.WorldWidth
-			AddBox(engine.World, float64(x), settings.WorldHeight, rand.Float64(), 1, 1, 0.5, 0.3)
+			for i := 0; i < boxesCountPerTime; i++ {
+				x := rand.Uint32() % settings.WorldWidth
+				AddBox(engine.World, float64(x), settings.WorldHeight, rand.Float64(), 1, 1, 0.5, 0.3)
+			}
 		},
 	}
 }

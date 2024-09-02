@@ -32,7 +32,7 @@ func NewGameProcessor(mod engine.GameEngineMod, clientManager *ClientManager) *G
 	case engine.SelectTeamMode:
 		gameEngine = engine.NewSelectTeamGameEngine(ctx, mod, clientManager.Input)
 	case engine.MainGameMode:
-		gameEngine = engine.NewMainGameEngine(ctx, mod, clientManager.Input)
+		gameEngine = engine.NewMainGameEngine(ctx, mod, clientManager.Input, len(clientManager.GetAllClients()))
 	default:
 		log.Fatalf("Invalid game engine mode: $%d", mod)
 	}
