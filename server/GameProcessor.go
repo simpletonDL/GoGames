@@ -68,8 +68,17 @@ func NewGameProcessor(mod engine.GameEngineMod, clientManager *ClientManager) *G
 			everybodyIsReadyToStart := utils.AllEntries(e.Players, func(key engine.PlayerId, value *engine.PlayerInfo) bool {
 				return value.IsReadyToStart
 			})
-			if everybodyIsReadyToStart && len(e.Players) > 0 {
-				println("everybodyIsReadyToStart && len(e.Players) > 0")
+			blueTeamSize := 0
+			redTeamSize := 0
+			for _, info := range e.Players {
+				switch info.Team {
+				case protocol.BlueTeam:
+					blueTeamSize += 1
+				case protocol.RedTeam:
+					redTeamSize += 1
+				}
+			}
+			if everybodyIsReadyToStart && blueTeamSize > 0 && redTeamSize > 0 {
 				processor.ReadyToStart <- true
 			}
 		})
