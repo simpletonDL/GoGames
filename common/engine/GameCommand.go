@@ -68,10 +68,14 @@ func (c PlayerInputCommand) Execute(engine *GameEngine) {
 		direction := playerInfo.Direction
 		switch moveKind {
 		case protocol.MoveHeroKind.Right:
-			desiredVelX = min(playerVel.X+settings.PlayerHorizontalAccelerationPerFrame, settings.PlayerMaxHorizontalSpeed)
+			if playerVel.X < settings.PlayerMaxHorizontalSpeed {
+				desiredVelX = min(playerVel.X+settings.PlayerHorizontalAccelerationPerFrame, settings.PlayerMaxHorizontalSpeed)
+			}
 			direction = protocol.DirectionKindRight
 		case protocol.MoveHeroKind.Left:
-			desiredVelX = max(playerVel.X-settings.PlayerHorizontalAccelerationPerFrame, -settings.PlayerMaxHorizontalSpeed)
+			if playerVel.X > -settings.PlayerMaxHorizontalSpeed {
+				desiredVelX = max(playerVel.X-settings.PlayerHorizontalAccelerationPerFrame, -settings.PlayerMaxHorizontalSpeed)
+			}
 			direction = protocol.DirectionKindLeft
 		case protocol.MoveHeroKind.Up:
 			if playerInfo.JumpCount > 0 {
