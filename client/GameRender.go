@@ -105,17 +105,40 @@ func Render(image *ebiten.Image, state *protocol.GameState) {
 	players := utils.Filter(state.Objects, func(object protocol.GameObject) bool {
 		return object.BodyKind == protocol.BodyKindHero
 	})
+	blueTeamPlayers := utils.Filter(players, func(object protocol.GameObject) bool { return object.Team == protocol.BlueTeam })
+	redTeamPlayers := utils.Filter(players, func(object protocol.GameObject) bool { return object.Team == protocol.RedTeam })
+	addPlayerTextInfo(image, blueTeamPlayers, protocol.BlueTeam)
+	addPlayerTextInfo(image, redTeamPlayers, protocol.RedTeam)
+}
+
+func addPlayerTextInfo(image *ebiten.Image, players []protocol.GameObject, team protocol.TeamKind) {
 	for i, player := range players {
-		playerTextInfo := fmt.Sprintf("L: %d, C: %d/%d (%d)",
+		var weaponAvailableBullets string
+		if player.WeaponAvailableBullets > 100_000 {
+			weaponAvailableBullets = "inf"
+		} else {
+			weaponAvailableBullets = fmt.Sprintf("%d", player.WeaponAvailableBullets)
+		}
+
+		playerTextInfo := fmt.Sprintf("%s L=%d C=%d/%d (%s)",
+			utils.AdjustString(player.Nickname, 15),
 			player.LivesCount,
 			player.WeaponAvailableBulletsInMagazine,
 			player.WeaponMagazineCapacity,
-			player.WeaponAvailableBullets,
+			weaponAvailableBullets,
 		)
 		// TODO: place text in respect of team (after introducing teams)
-		padding := i * 25
+		yPos := i * 25
+		xPos := 0
+		switch team {
+		case protocol.BlueTeam:
+			xPos = 0
+		case protocol.RedTeam:
+			xPos = settings.ScreenWidth / 2
+		}
+
 		opts := text.DrawOptions{}
-		opts.GeoM.Translate(0, float64(padding))
+		opts.GeoM.Translate(float64(xPos), float64(yPos))
 		text.Draw(image, playerTextInfo, &text.GoTextFace{Source: MainFont, Size: 15}, &opts)
 	}
 }

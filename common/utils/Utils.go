@@ -1,6 +1,9 @@
 package utils
 
-import "math/rand"
+import (
+	"math/rand"
+	"strings"
+)
 
 // RandInRange generates random integer from [min, max)
 func RandInRange(min, max int) int {
@@ -57,4 +60,9 @@ func AllEntries[K comparable, V any](xs map[K]V, f func(key K, value V) bool) bo
 		}
 	}
 	return true
+}
+
+func AdjustString(s string, size int) string {
+	s = s[:min(len(s), size)]
+	return s + strings.Repeat(" ", size-len(s))
 }
