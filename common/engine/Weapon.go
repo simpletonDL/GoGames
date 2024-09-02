@@ -68,6 +68,12 @@ func (c *DefaultWeapon) isAvailable() bool {
 }
 
 func (c *DefaultWeapon) Shoot(engine *GameEngine, playerInfo *PlayerInfo) {
+	if c.availableBullets == 0 {
+		engine.ScheduleCommand(CustomCommand{func(e *GameEngine) {
+			playerInfo.Weapon = CreateWeapon(protocol.WeaponKindDefault)
+		}})
+		return
+	}
 	if !c.isAvailable() {
 		return
 	}
