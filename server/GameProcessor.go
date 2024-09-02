@@ -2,8 +2,6 @@ package server
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"github.com/simpletonDL/GoGames/common/engine"
 	"github.com/simpletonDL/GoGames/common/protocol"
 	"github.com/simpletonDL/GoGames/common/settings"
@@ -49,15 +47,8 @@ func NewGameProcessor(mod engine.GameEngineMod, clientManager *ClientManager) *G
 	}
 	// This callback sends new game state to client every timestamp
 	processor.GameEngine.AddListener(func(e *engine.GameEngine) {
-		for _, client := range clientManager.GetAllClients() {
-			encoder := json.NewEncoder(client.conn)
-			state := engine.GetGameState(e)
-			err := encoder.Encode(state)
-			if err != nil {
-				// TODO: remove client on disconnection
-				fmt.Printf("Decodding game state error: %s\n", err.Error())
-			}
-		}
+		state := engine.GetGameState(e)
+		clientManager.Broadcast(state)
 	})
 	if mod == engine.SelectTeamMode {
 		processor.GameEngine.AddListener(func(e *engine.GameEngine) {
